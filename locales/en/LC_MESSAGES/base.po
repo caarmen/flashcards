@@ -1,0 +1,23 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "main_text"
+msgstr "Hello world"
+
+msgid "display_flashcard"
+msgstr "{index} of {total}: {key}"
+
+msgid "right_guess"
+msgstr "Correct! 👏"
+
+msgid "wrong_guess"
+msgstr "Wrong answer 😭. The right answer is {correct_answer}"
+
+msgid "guess_prompt"
+msgstr "Your guess? "
+
+msgid "game_score"
+msgstr "Correctly guessed {correct_count} out of {guessed_count}."
+
