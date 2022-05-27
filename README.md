@@ -1,6 +1,6 @@
 # Flashcards game
 
-[<img src="https://img.shields.io/badge/license-MIT-lightgrey.svg?maxAge=2592000">](https://raw.githubusercontent.com/caarmen/flashcards/main/LICENSE)
+[<img src="https://img.shields.io/badge/license-MIT-lightgrey.svg?maxAge=2592000">](https://raw.githubusercontent.com/caarmen/flashcards/main/LICENSE.txt)
 [<img src="https://github.com/caarmen/flashcards/actions/workflows/tests.yml/badge.svg">](https://github.com/caarmen/flashcards/actions?query=workflow%3A%22Run+tests%22++)
 
 
