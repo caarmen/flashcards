@@ -22,6 +22,12 @@ class ConsoleUi(Ui):
     async def input_guess(self, flashcard: str) -> str:
         return input(self.translations("guess_prompt"))
 
+    async def input_replay_missed_cards(self) -> bool:
+        return (
+            input(self.translations("play_again")).casefold()
+            == self.translations("answer_yes").casefold()
+        )
+
     def display_right_guess(self, key: str, correct_answer: str):
         print(self.translations("right_guess"))
 

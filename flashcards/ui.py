@@ -22,6 +22,12 @@ class Ui(metaclass=abc.ABCMeta):
         """
 
     @abc.abstractmethod
+    async def input_replay_missed_cards(self) -> bool:
+        """
+        Ask the user if they want to replay the cards they missed
+        """
+
+    @abc.abstractmethod
     def display_right_guess(self, key: str, correct_answer: str):
         """
         :param key: the flashcard side initially displayed

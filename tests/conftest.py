@@ -36,6 +36,9 @@ def fixture_ui_factory():
         async def input_guess(self, flashcard: str) -> str:
             return self.guesses.get(flashcard)
 
+        async def input_replay_missed_cards(self) -> bool:
+            return False
+
         def display_score(self, correct_count: int, guessed_count: int):
             self.correct_count = correct_count
             self.guessed_count = guessed_count

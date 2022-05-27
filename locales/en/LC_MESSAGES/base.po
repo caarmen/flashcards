@@ -18,6 +18,12 @@ msgstr "Wrong answer 😭. The right answer is {correct_answer}"
 msgid "guess_prompt"
 msgstr "Your guess? "
 
+msgid "play_again"
+msgstr "Replay missed cards (Y)es/(N)o? "
+
+msgid "answer_yes"
+msgstr "Y"
+
 msgid "game_score"
 msgstr "Correctly guessed {correct_count} out of {guessed_count}."
 

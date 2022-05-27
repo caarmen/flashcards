@@ -18,5 +18,11 @@ msgstr "Mauvaise réponse 😭. La réponse est {correct_answer}"
 msgid "guess_prompt"
 msgstr "Votre réponse ? "
 
+msgid "play_again"
+msgstr "Retester les cartes ratées (O)ui/(N)on ? "
+
+msgid "answer_yes"
+msgstr "O"
+
 msgid "game_score"
 msgstr "Vous avez deviné {correct_count} sur {guessed_count}."
