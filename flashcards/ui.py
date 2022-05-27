@@ -47,3 +47,8 @@ class Ui(metaclass=abc.ABCMeta):
         """
         Display the score of a game
         """
+
+    def game_over(self):
+        """
+        Handle any cleanup at the end of the game
+        """

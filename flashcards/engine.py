@@ -48,9 +48,11 @@ class Engine:
         """
         flashcards = self.provider.flashcards()
         await self._play_deck(flashcards)
+        self.game_ui.game_over()
 
     async def game_interrupted(self):
         """
         Handle the interruption of the game by the user
         """
         self.game_ui.display_score(self.correct_count, self.guessed_count)
+        self.game_ui.game_over()
