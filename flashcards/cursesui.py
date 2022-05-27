@@ -85,9 +85,7 @@ class CursesUi(Ui):
         self._windows.input.mvwin(begin_y, begin_x)
         self._windows.input.move(0, 0)
         text_box = Textbox(self._windows.input, insert_mode=True)
-        text_box.edit(validate=lambda x: x if x != 127 else curses.KEY_BACKSPACE)
-        self._windows.input.refresh()
-        return text_box.gather().strip()
+        return text_box.edit(validate=lambda x: x if x != 127 else curses.KEY_BACKSPACE).strip()
 
     def display_flashcard(self, index: int, total: int, flashcard: str):
         self._display_text(
