@@ -9,13 +9,14 @@ keys and prompting the user to guess the values.
 
 ```commandline
 % python -m flashcards --help
-usage: flashcards [-h] flashcards_csv_file
+usage: flashcards [-h] [--ui [{text,curses}]] flashcards_csv_file
 
 Flashcards game
 
 positional arguments:
-  flashcards_csv_file  Path to flashcards csv file
+  flashcards_csv_file   Path to flashcards csv file
 
 options:
-  -h, --help           show this help message and exit
+  -h, --help            show this help message and exit
+  --ui [{text,curses}]  Ui type. Default is curses
 ```

@@ -3,10 +3,8 @@ Flashcard tests
 """
 import asyncio
 
-from flashcards.consoleui import ConsoleUi
-from flashcards.engine import Engine
 from flashcards.csvprovider import CsvFlashcardProvider
-from flashcards.ui import Ui
+from flashcards.engine import Engine
 
 
 def test_csv_provider(tmp_path):
@@ -20,7 +18,6 @@ goodbye,au revoir"""
 
     with open(input_file, encoding="utf-8") as csv_file:
         provider = CsvFlashcardProvider(csv_file)
-    assert issubclass(ConsoleUi, Ui)
     flashcards = provider.flashcards()
     assert flashcards["hello"] == "bonjour"
     assert flashcards["goodbye"] == "au revoir"

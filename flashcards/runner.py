@@ -5,7 +5,8 @@ import argparse
 import gettext
 import os
 
-from flashcards.consoleui import ConsoleUi
+from flashcards.textui import TextUi
+from flashcards.cursesui import CursesUi
 from flashcards.engine import Engine
 from flashcards.csvprovider import CsvFlashcardProvider
 
@@ -20,19 +21,26 @@ async def main():
     """
     Application entry point
     """
-    parser = argparse.ArgumentParser(
-        prog="flashcards",
-        description="Flashcards game"
-    )
+    parser = argparse.ArgumentParser(prog="flashcards", description="Flashcards game")
     parser.add_argument(
         "input",
         metavar="flashcards_csv_file",
         type=argparse.FileType("r"),
         help="Path to flashcards csv file",
     )
+    parser.add_argument(
+        "--ui",
+        nargs="?",
+        default="curses",
+        choices=["text", "curses"],
+        help="Ui type. Default is %(default)s",
+    )
     options = parser.parse_args()
 
-    game_ui = ConsoleUi(_)
+    if options.ui == "curses":
+        game_ui = CursesUi(_)
+    else:
+        game_ui = TextUi(_)
     provider = CsvFlashcardProvider(options.input)
     engine = Engine(game_ui, provider)
     try:
