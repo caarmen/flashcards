@@ -1,4 +1,9 @@
 # Flashcards game
+
+[<img src="https://img.shields.io/badge/license-MIT-lightgrey.svg?maxAge=2592000">](https://raw.githubusercontent.com/caarmen/flashcards/main/LICENSE)
+[<img src="https://github.com/caarmen/flashcards/actions/workflows/tests.yml/badge.svg">](https://github.com/caarmen/flashcards/actions?query=workflow%3A%22Run+tests%22++)
+
+
 Reads a CSV file of key/values and quizzes the user, providing the
 keys and prompting the user to guess the values.
 
