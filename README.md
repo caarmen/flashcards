@@ -8,8 +8,8 @@ Reads a CSV file of key/values and quizzes the user, providing the
 keys and prompting the user to guess the values.
 
 ```commandline
-% python -m flashcards -h
-usage: __main__.py [-h] flashcards_csv_file
+% python -m flashcards --help
+usage: flashcards [-h] flashcards_csv_file
 
 Flashcards game
 

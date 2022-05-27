@@ -20,7 +20,10 @@ async def main():
     """
     Application entry point
     """
-    parser = argparse.ArgumentParser(description="Flashcards game")
+    parser = argparse.ArgumentParser(
+        prog="flashcards",
+        description="Flashcards game"
+    )
     parser.add_argument(
         "input",
         metavar="flashcards_csv_file",
