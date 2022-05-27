@@ -1,12 +1,13 @@
 """
-Console user interface
+Simple text console user interface
 """
 from flashcards.ui import Ui
 
 
-class ConsoleUi(Ui):
+class TextUi(Ui):
     """
-    Interface to interact with the user in the flashcard game, in a console
+    Interface to interact with the user in the flashcard game, in a console,
+    using simple text input/output
     """
 
     def __init__(self, translations):
