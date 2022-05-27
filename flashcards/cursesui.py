@@ -2,6 +2,7 @@
 Curses-based console user interface
 """
 import curses
+import unicodedata
 from curses.textpad import Textbox, rectangle
 
 from flashcards.ui import Ui
@@ -14,6 +15,8 @@ class CursesUi(Ui):
 
     class _Windows:
         def __init__(self):
+            # pylint: disable=no-member
+            self.main = curses.newwin(curses.LINES, curses.COLS)
             self.guess_result = curses.newwin(1, 1)
             self.card = curses.newwin(1, 1)
             self.input_label = curses.newwin(1, 1)
@@ -24,8 +27,12 @@ class CursesUi(Ui):
     def __init__(self, translations):
         self.translations = translations
         self._stdscr = curses.initscr()
-        self._windows = self._Windows()
         curses.noecho()
+        curses.start_color()
+        curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_BLUE)
+        self._windows = self._Windows()
+        self._windows.main.bkgd(" ", curses.color_pair(1))
+        self._windows.main.refresh()
 
     @classmethod
     def _get_text_coordinates(
@@ -39,21 +46,28 @@ class CursesUi(Ui):
         return begin_y, begin_x
 
     @classmethod
-    def _display_text(cls, win, offset_y_pct: float, text: str):
-        begin_y, begin_x = cls._get_text_coordinates(
-            offset_y_pct=offset_y_pct, text_length=len(text)
+    def _text_width(cls, text: str) -> int:
+        wide_char_count = sum(
+            [1 for ch in text if unicodedata.east_asian_width(ch) == "W"]
+        )
+        return wide_char_count + len(text)
+
+    def _display_text(self, win, offset_y_pct: float, text: str):
+        begin_y, begin_x = self._get_text_coordinates(
+            offset_y_pct=offset_y_pct, text_length=self._text_width(text)
         )
 
-        win.resize(1, 1)
-        win.mvwin(begin_y, 1)
-        # pylint: disable=no-member
-        win.resize(1, curses.COLS)
+        win.move(0, 0)
+        win.bkgd(" ", curses.color_pair(1))
+        win.clrtoeol()
         win.refresh()
 
-        win.resize(1, len(text) + 5)
+        win.resize(1, self._text_width(text))
         win.mvwin(begin_y, begin_x)
-        win.addstr(0, 0, text)
-
+        try:
+            win.addstr(0, 0, text, curses.color_pair(1) | curses.A_BOLD)
+        except curses.error:
+            pass
         win.refresh()
 
     def _input_text(self, offset_y_pct: float, length: int) -> str:
