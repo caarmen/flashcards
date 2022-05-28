@@ -1,5 +1,8 @@
 """
 "Widget" implementations in ncurses
+I would have liked to find an abstraction over curses so I wouldn't have
+to implement widgets at this level. The urwid library exists, but it
+hasn't been updated for over 1.5 years, and it has 145 open issues.
 """
 import abc
 import curses
