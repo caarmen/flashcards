@@ -199,6 +199,8 @@ class CursesUi(Ui):
             pass
         self._windows.score.clear()
         self._windows.score.refresh()
+        self._windows.input_label.clear()
+        self._windows.input_label.refresh()
         return do_replay
 
     def display_right_guess(self, key: str, correct_answer: str):
