@@ -7,14 +7,15 @@ import os
 from os import path
 import sys
 
+from flashcards.cursesui.cursesui import CursesUi
 from flashcards.textui import TextUi
-from flashcards.cursesui import CursesUi
 from flashcards.engine import Engine
 from flashcards.csvprovider import CsvFlashcardProvider
 
-bundle_dir = getattr(sys, '_MEIPASS', path.abspath(
-    path.dirname(path.dirname(__file__))))
-locales_dir = path.abspath(path.join(bundle_dir, 'locales'))
+BUNDLE_DIR = getattr(
+    sys, "_MEIPASS", path.abspath(path.dirname(path.dirname(__file__)))
+)
+locales_dir = path.abspath(path.join(BUNDLE_DIR, "locales"))
 
 translations = gettext.translation(
     "base", localedir=locales_dir, languages=[os.environ.get("LANG", "en")]
