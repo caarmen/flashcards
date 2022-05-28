@@ -48,11 +48,11 @@ def _text_width(text: str) -> int:
 
 
 class _BackgroundWindow:
-    def __init__(self, parent_win):
+    def __init__(self, parent_win, color_pair):
         self._parent_win = parent_win
         screen_lines, screen_cols = self._parent_win.getmaxyx()
         self.win = curses.newwin(screen_lines, screen_cols)
-        self.win.bkgd(" ", curses.color_pair(1))
+        self.win.bkgd(" ", color_pair)
         self.win.refresh()
 
     def redraw(self):
@@ -182,7 +182,7 @@ class CursesUi(Ui):
     class _Windows:
         def __init__(self, root_window):
             # pylint: disable=no-member
-            self.main = _BackgroundWindow(root_window)
+            self.main = _BackgroundWindow(root_window, color_pair=curses.color_pair(1))
             self.guess_result = _TextWindow(parent_win=root_window, offset_y=lambda lines, cols: int(lines / 2) - 8)
             self.progress = _TextWindow(parent_win=root_window, offset_y=lambda lines, cols: lines - 1)
             self.card_bkgd = _FlashcardBackground(parent_win=root_window)
