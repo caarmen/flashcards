@@ -1,3 +1,6 @@
+"""
+"Widget" implementations in ncurses
+"""
 import abc
 import curses
 from curses.textpad import rectangle
@@ -20,7 +23,9 @@ class _BaseWindow:
 
     @abc.abstractmethod
     def redraw(self):
-        pass
+        """
+        Redraw the widget
+        """
 
     def hide(self):
         self.win.clear()
@@ -29,6 +34,10 @@ class _BaseWindow:
 
 
 class BackgroundWindow(_BaseWindow):
+    """
+    Displays the background of the screen
+    """
+
     def __init__(self, parent_win, color_pair):
         screen_lines, screen_cols = parent_win.getmaxyx()
         super().__init__(parent_win, screen_lines, screen_cols)
@@ -42,6 +51,10 @@ class BackgroundWindow(_BaseWindow):
 
 
 class TextWindow(_BaseWindow):
+    """
+    Displays a text on the screen
+    """
+
     def __init__(self, parent_win, offset_y: Callable[[int], int]):
         super().__init__(parent_win)
         self._offset_y = offset_y
@@ -49,6 +62,12 @@ class TextWindow(_BaseWindow):
         self._color_attrs = curses.A_BOLD
 
     def set_text(self, text: str, color_pair: int = None, color_attrs: int = None):
+        """
+        Display a text
+        :param text: the text to display
+        :param color_pair: the color pair to use
+        :param color_attrs: color attributes to use
+        """
         screen_lines, screen_cols = self._parent_win.getmaxyx()
         begin_x = int((screen_cols - _text_width(text)) / 2)
         begin_y = self._offset_y(screen_lines)
@@ -74,6 +93,10 @@ class TextWindow(_BaseWindow):
 
 
 class FlashcardBackground(_BaseWindow):
+    """
+    Displays the flashcard background
+    """
+
     def __init__(self, parent_win):
         super().__init__(parent_win=parent_win)
         self.width = 0
@@ -91,6 +114,10 @@ class FlashcardBackground(_BaseWindow):
 
 
 class InputBorder(_BaseWindow):
+    """
+    Displays a border around the input field
+    """
+
     def __init__(self, parent_win):
         super().__init__(parent_win=parent_win)
         self.width = 0
@@ -110,6 +137,10 @@ class InputBorder(_BaseWindow):
 
 
 class Input(_BaseWindow):
+    """
+    Displays the input field
+    """
+
     def __init__(self, parent_win):
         super().__init__(parent_win=parent_win)
         self.width = 0
@@ -136,6 +167,9 @@ class Input(_BaseWindow):
         self.win.refresh()
 
     def wait_for_key(self) -> str:
+        """
+        :return: the key input by the user
+        """
         while True:
             ch = self.win.getch()
             if ch > 0 and ch != curses.KEY_RESIZE:
