@@ -22,6 +22,11 @@ class _BaseWindow:
     def redraw(self):
         pass
 
+    def hide(self):
+        self.win.clear()
+        self.win.bkgd(" ", curses.color_pair(1))
+        self.win.refresh()
+
 
 class BackgroundWindow(_BaseWindow):
     def __init__(self, parent_win, color_pair):
@@ -37,7 +42,7 @@ class BackgroundWindow(_BaseWindow):
 
 
 class TextWindow(_BaseWindow):
-    def __init__(self, parent_win, offset_y: Callable[[int, int], int]):
+    def __init__(self, parent_win, offset_y: Callable[[int], int]):
         super().__init__(parent_win)
         self._offset_y = offset_y
         self._color_pair = curses.color_pair(1)
@@ -46,7 +51,7 @@ class TextWindow(_BaseWindow):
     def set_text(self, text: str, color_pair: int = None, color_attrs: int = curses.A_BOLD):
         screen_lines, screen_cols = self._parent_win.getmaxyx()
         begin_x = int((screen_cols - _text_width(text)) / 2)
-        begin_y = self._offset_y(screen_lines, screen_cols)
+        begin_y = self._offset_y(screen_lines)
 
         if color_pair:
             self._color_pair = color_pair
@@ -68,17 +73,6 @@ class TextWindow(_BaseWindow):
     def redraw(self):
         text = self.win.instr(0, 0).decode("utf-8").strip()
         self.set_text(text, color_pair=self._color_pair, color_attrs=self._color_attrs)
-
-    def hide(self):
-        self.win.clear()
-        self.win.bkgd(" ", curses.color_pair(1))
-        self.win.refresh()
-
-    def wait_for_key(self) -> str:
-        while True:
-            ch = self.win.getch()
-            if ch > 0 and ch != curses.KEY_RESIZE:
-                return chr(ch)
 
 
 class FlashcardBackground(_BaseWindow):
@@ -148,3 +142,9 @@ class Input(_BaseWindow):
         except curses.error:
             pass
         self.win.refresh()
+
+    def wait_for_key(self) -> str:
+        while True:
+            ch = self.win.getch()
+            if ch > 0 and ch != curses.KEY_RESIZE:
+                return chr(ch)

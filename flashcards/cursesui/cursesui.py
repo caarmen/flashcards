@@ -18,15 +18,16 @@ class CursesUi(Ui):
         def __init__(self, root_window):
             # pylint: disable=no-member
             self.main = BackgroundWindow(root_window, color_pair=curses.color_pair(1))
-            self.guess_result = TextWindow(parent_win=root_window, offset_y=lambda lines, cols: int(lines / 2) - 8)
-            self.progress = TextWindow(parent_win=root_window, offset_y=lambda lines, cols: lines - 1)
+            self.guess_result = TextWindow(parent_win=root_window, offset_y=lambda lines: int(lines / 2) - 8)
+            self.progress = TextWindow(parent_win=root_window, offset_y=lambda lines: lines - 1)
             self.card_bkgd = FlashcardBackground(parent_win=root_window)
-            self.card_text = TextWindow(parent_win=root_window, offset_y=lambda lines, cols: int(lines / 2) - 3)
-            self.input_label = TextWindow(parent_win=root_window, offset_y=lambda lines, cols: int(lines / 2) + 3)
+            self.card_text = TextWindow(parent_win=root_window, offset_y=lambda lines: int(lines / 2) - 3)
+            self.input_label = TextWindow(parent_win=root_window, offset_y=lambda lines: int(lines / 2) + 3)
             self.input = Input(parent_win=root_window)
             self.input_border = InputBorder(parent_win=root_window)
-            self.score = TextWindow(parent_win=root_window, offset_y=lambda lines, cols: int(lines / 2) + 6)
-            self.text_windows = [
+            self.score = TextWindow(parent_win=root_window, offset_y=lambda lines: int(lines / 2) + 6)
+            self.all = [
+                self.main,
                 self.guess_result,
                 self.progress,
                 self.input_label,
@@ -57,8 +58,7 @@ class CursesUi(Ui):
         if ch == 127:
             return curses.KEY_BACKSPACE
         if ch == curses.KEY_RESIZE:
-            self._windows.main.redraw()
-            for win in self._windows.text_windows:
+            for win in self._windows.all:
                 win.redraw()
         return ch
 
