@@ -102,6 +102,25 @@ class _FlashcardBackground(_TextWindow):
         self.win.refresh()
 
 
+class _InputBorder(_TextWindow):
+    def __init__(self, parent_win):
+        super().__init__(parent_win=parent_win, offset_y=lambda lines, cols: int(lines / 2) + 2)
+        self.width = 0
+
+    def set_text(self, text: str, color_pair: int = None, color_attrs: int = curses.A_BOLD):
+        screen_lines, screen_cols = self._parent_win.getmaxyx()
+        begin_x = int((screen_cols - self.width) / 2)
+        begin_y = self._offset_y(screen_lines, screen_cols)
+        self.win.bkgd(" ", curses.color_pair(1))
+        self.win.erase()
+        self.win.refresh()
+        self.win.resize(3, self.width+ 3)
+        self.win.bkgd(" ", curses.color_pair(0))
+        self.win.mvwin(begin_y - 1, begin_x - 1)
+        rectangle(self.win, 0, 0, 2, self.width + 1)
+        self.win.refresh()
+
+
 class CursesUi(Ui):
     """
     Interact with the user in the flashcard game, in a console using curses
@@ -118,12 +137,13 @@ class CursesUi(Ui):
             self.card_text = _TextWindow(parent_win=root_window, offset_y=lambda lines, cols: int(lines / 2) - 3)
             self.input_label = _TextWindow(parent_win=root_window, offset_y=lambda lines, cols: int(lines / 2) - 3)
             self.input = _TextWindow(parent_win=root_window, offset_y=lambda lines, cols: int(lines / 2))
-            self.input_border = _TextWindow(parent_win=root_window, offset_y=lambda lines, cols: int(lines / 2))
+            self.input_border = _InputBorder(parent_win=root_window)
             self.score = _TextWindow(parent_win=root_window, offset_y=lambda lines, cols: int(lines / 2) + 3)
             self.text_windows = [
                 self.guess_result,
                 self.progress,
                 self.input_label,
+                self.input_border,
                 self.score,
                 self.card_bkgd,
                 self.card_text,
@@ -153,6 +173,8 @@ class CursesUi(Ui):
         return self._stdscr.getmaxyx()[1]
 
     def _display_input_box(self, offset_y: int, length: int):
+        self._windows.input_border.width = length
+        self._windows.input_border.set_text("")
         """
         self._windows.input.clear()
         begin_y, begin_x = self._get_text_coordinates(
