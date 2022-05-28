@@ -223,7 +223,7 @@ class CursesUi(Ui):
         # pylint: disable=no-member
         return self._stdscr.getmaxyx()[1]
 
-    def _display_input_box(self, offset_y: int, length: int):
+    def _display_input_box(self, length: int):
         self._windows.input_border.width = length
         self._windows.input_border.set_text("")
         self._windows.input.width = length
@@ -238,8 +238,8 @@ class CursesUi(Ui):
                 win.redraw()
         return ch
 
-    def _input_text(self, offset_y: int, length: int) -> str:
-        self._display_input_box(offset_y=offset_y, length=length)
+    def _input_text(self, length: int) -> str:
+        self._display_input_box(length=length)
         text_box = UnicodeTextbox(self._windows.input.win, length=length)
         return text_box.edit(validate=self._horse)
 
@@ -265,7 +265,7 @@ class CursesUi(Ui):
         input_width = max_answer_length + 1
         if input_width % 2 != 0:
             input_width += 1
-        return self._input_text(offset_y=3, length=input_width)
+        return self._input_text(length=input_width)
 
     async def input_replay_missed_cards(self) -> bool:
         self._windows.input_label.set_text(
