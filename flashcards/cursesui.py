@@ -44,7 +44,8 @@ class CursesUi(Ui):
             self.main = curses.newwin(curses.LINES, curses.COLS)
             self.guess_result = curses.newwin(1, 1)
             self.progress = curses.newwin(1, 1)
-            self.card = curses.newwin(1, 1)
+            self.card_bkgd = curses.newwin(1, 1)
+            self.card_text = curses.newwin(1, 1)
             self.input_label = curses.newwin(1, 1)
             self.input = curses.newwin(1, 1)
             self.input_border = curses.newwin(1, 1)
@@ -60,13 +61,20 @@ class CursesUi(Ui):
         self._windows.main.bkgd(" ", curses.color_pair(1))
         self._windows.main.refresh()
 
-    @classmethod
-    def _get_text_coordinates(cls, offset_y: int, text_length: int) -> tuple[int, int]:
+    @property
+    def _lines(self) -> int:
         # pylint doesn't realize that we'll have the LINES and COLS members
         # pylint: disable=no-member
-        begin_y = int(curses.LINES / 2) + offset_y
+        return curses.LINES
+
+    @property
+    def _cols(self) -> int:
         # pylint: disable=no-member
-        begin_x = int((curses.COLS - text_length) / 2)
+        return curses.COLS
+
+    def _get_text_coordinates(self, offset_y: int, text_length: int) -> tuple[int, int]:
+        begin_y = int(self._lines / 2) + offset_y
+        begin_x = int((self._cols - text_length) / 2)
         return begin_y, begin_x
 
     @classmethod
@@ -76,20 +84,23 @@ class CursesUi(Ui):
         )
         return wide_char_count + len(text)
 
-    def _display_text(self, win, offset_y: int, text: str):
+    def _display_text(self, win, offset_y: int, text: str, color_pair=None):
         begin_y, begin_x = self._get_text_coordinates(
             offset_y=offset_y, text_length=self._text_width(text)
         )
 
+        if not color_pair:
+            color_pair = curses.color_pair(1)
+
         win.move(0, 0)
-        win.bkgd(" ", curses.color_pair(1))
+        win.bkgd(" ", color_pair)
         win.clrtoeol()
         win.refresh()
 
         win.resize(1, self._text_width(text))
         win.mvwin(begin_y, begin_x)
         try:
-            win.addstr(0, 0, text, curses.color_pair(1) | curses.A_BOLD)
+            win.addstr(0, 0, text, curses.A_BOLD)
         except curses.error:
             pass
         win.refresh()
@@ -120,10 +131,22 @@ class CursesUi(Ui):
             offset_y=7,
             text=self.translations("progress").format(index=index, total=total),
         )
+        flashcard_width = len(flashcard) + 8
+        self._windows.card_bkgd.erase()
+        self._windows.card_bkgd.bkgd(" ", curses.color_pair(1))
+        self._windows.card_bkgd.refresh()
+        self._windows.card_bkgd.resize(5, flashcard_width)
+        self._windows.card_bkgd.bkgd(" ", curses.color_pair(1) | curses.A_REVERSE)
+        self._windows.card_bkgd.mvwin(
+            int(self._lines / 2) - 5, int((self._cols - flashcard_width) / 2)
+        )
+        self._windows.card_bkgd.box()
+        self._windows.card_bkgd.refresh()
         self._display_text(
-            win=self._windows.card,
+            win=self._windows.card_text,
             offset_y=-3,
             text=self.translations("display_flashcard").format(key=flashcard),
+            color_pair=curses.color_pair(1) | curses.A_REVERSE,
         )
 
     async def input_guess(self, flashcard: str, max_answer_length: int) -> str:
