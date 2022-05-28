@@ -47,17 +47,6 @@ class CursesUi(Ui):
             curses.init_pair(2, curses.COLOR_BLACK, curses.COLOR_WHITE)
         self._windows = self._Windows(self._stdscr)
 
-    @property
-    def _lines(self) -> int:
-        # pylint doesn't realize that we'll have the LINES and COLS members
-        # pylint: disable=no-member
-        return self._stdscr.getmaxyx()[0]
-
-    @property
-    def _cols(self) -> int:
-        # pylint: disable=no-member
-        return self._stdscr.getmaxyx()[1]
-
     def _display_input_box(self, length: int):
         self._windows.input_border.width = length
         self._windows.input_border.set_text("")
