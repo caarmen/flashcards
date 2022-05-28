@@ -7,8 +7,8 @@ import os
 from os import path
 import sys
 
+from flashcards.cursesui.cursesui import CursesUi
 from flashcards.textui import TextUi
-from flashcards.cursesui import CursesUi
 from flashcards.engine import Engine
 from flashcards.csvprovider import CsvFlashcardProvider
 

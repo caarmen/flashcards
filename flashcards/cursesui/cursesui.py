@@ -2,42 +2,13 @@
 Curses-based console user interface
 """
 import curses
+from curses.textpad import rectangle
 from typing import Callable
 
 import unicodedata
-from curses.textpad import Textbox, rectangle
-from curses.ascii import isprint, iscntrl
 
+from flashcards.cursesui.unicodetextbox import UnicodeTextbox
 from flashcards.ui import Ui
-
-
-class UnicodeTextbox(Textbox):
-    """
-    Add some support for unicode to Textbox
-    """
-
-    def __init__(self, win, length):
-        super().__init__(win)
-        self.length = length
-        self.win = win
-
-    def do_command(self, ch):
-        if ch < 0 or isprint(ch) or iscntrl(ch) or curses.KEY_MIN < ch < curses.KEY_MAX:
-            return super().do_command(ch)
-        try:
-            self.win.addch(ch)
-        except curses.error:
-            pass
-        return 1
-
-    def gather(self) -> str:
-        return self.win.instr(0, 0).decode("utf-8")
-
-
-def _get_text_coordinates(screen_lines: int, screen_cols: int, offset_y: int, text_length: int) -> tuple[int, int]:
-    begin_y = int(screen_lines / 2) + offset_y
-    begin_x = int((screen_cols - text_length) / 2)
-    return begin_y, begin_x
 
 
 def _text_width(text: str) -> int:
