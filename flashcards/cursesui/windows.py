@@ -48,7 +48,7 @@ class _BaseWindow:
         self.win.refresh()
 
 
-class BackgroundWindow(_BaseWindow):
+class Background(_BaseWindow):
     """
     Displays the background of the screen
     """
@@ -67,7 +67,7 @@ class BackgroundWindow(_BaseWindow):
         self.win.refresh()
 
 
-class TextWindow(_BaseWindow):
+class Label(_BaseWindow):
     """
     Displays a text on the screen
     """
@@ -100,19 +100,21 @@ class TextWindow(_BaseWindow):
         self.win.clrtoeol()
         self.win.refresh()
 
+        if not self._visible:
+            return
+
         self.win.resize(1, max(_text_width(text), 1))
         self.win.mvwin(begin_y, begin_x)
+        self.win.bkgd(" ", self._color_pair)
         safe_win_addstr(self.win, 0, 0, text, self._color_pair | self._color_attrs)
         self.win.refresh()
 
     def redraw(self):
-        if not self._visible:
-            return
         text = self.win.instr(0, 0).decode("utf-8").strip()
         self.set_text(text)
 
 
-class FlashcardBackground(_BaseWindow):
+class Card(_BaseWindow):
     """
     Displays the flashcard background
     """
@@ -132,6 +134,41 @@ class FlashcardBackground(_BaseWindow):
         self.win.bkgd(" ", curses.color_pair(1) | curses.A_REVERSE)
         self.win.mvwin(screen_lines // 2 - 5, (screen_cols - self.width) // 2)
         self.win.box()
+        self.win.refresh()
+
+
+class StatusBar(_BaseWindow):
+    """
+    Displays a bar at the bottom of the screen
+    """
+
+    def __init__(self, parent_win, color_pair):
+        super().__init__(parent_win=parent_win)
+        self._color_pair = color_pair
+        self._text = ""
+
+    def set_text(self, text: str):
+        """
+        Update the status bar text
+        """
+        self._text = text
+        self.redraw()
+
+    def redraw(self):
+        """
+        Redraw the widget
+        """
+        if not self._visible:
+            return
+        screen_lines, screen_cols = self._parent_win.getmaxyx()
+        self.win.erase()
+        self.win.bkgd(" ", curses.color_pair(1))
+        self.win.refresh()
+        self.win.resize(1, screen_cols)
+        self.win.bkgd(" ", self._color_pair)
+        self.win.mvwin(screen_lines - 1, 0)
+        text_col_start = screen_cols - _text_width(self._text) - 1
+        safe_win_addstr(self.win, 0, text_col_start, self._text)
         self.win.refresh()
 
 
@@ -202,6 +239,9 @@ class Input(_BaseWindow):
         return ch
 
     def wait_for_string(self) -> str:
+        """
+        :return: the string input by the user
+        """
         text_box = UnicodeTextbox(self.win, length=self.width)
         return text_box.edit(validate=self._input_validator)
 

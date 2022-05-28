@@ -6,11 +6,12 @@ from typing import Callable
 
 from flashcards.cursesui.safe_curses import safe_curses_curs_set
 from flashcards.cursesui.windows import (
-    BackgroundWindow,
-    TextWindow,
-    FlashcardBackground,
+    Background,
+    Label,
+    Card,
     Input,
     InputBorder,
+    StatusBar,
 )
 from flashcards.ui import Ui
 
@@ -24,29 +25,29 @@ class CursesUi(Ui):
     class _Windows:
         def __init__(self, root_window, key_input_callback: Callable[[int], None]):
             # pylint: disable=no-member
-            self.main = BackgroundWindow(root_window, color_pair=curses.color_pair(1))
-            self.guess_result = TextWindow(
+            self.main = Background(root_window, color_pair=curses.color_pair(1))
+            self.guess_result = Label(
                 parent_win=root_window, offset_y=lambda lines: lines // 2 - 8
             )
-            self.progress = TextWindow(
-                parent_win=root_window, offset_y=lambda lines: lines - 1
+            self.statusbar = StatusBar(
+                parent_win=root_window, color_pair=curses.color_pair(3)
             )
-            self.card_bkgd = FlashcardBackground(parent_win=root_window)
-            self.card_text = TextWindow(
+            self.card_bkgd = Card(parent_win=root_window)
+            self.card_text = Label(
                 parent_win=root_window, offset_y=lambda lines: lines // 2 - 3
             )
-            self.input_label = TextWindow(
+            self.input_label = Label(
                 parent_win=root_window, offset_y=lambda lines: lines // 2 + 3
             )
-            self.input = Input(parent_win=root_window, callback=lambda ch: key_input_callback(ch))
+            self.input = Input(parent_win=root_window, callback=key_input_callback)
             self.input_border = InputBorder(parent_win=root_window)
-            self.score = TextWindow(
+            self.score = Label(
                 parent_win=root_window, offset_y=lambda lines: lines // 2 + 6
             )
             self.all = [
                 self.main,
                 self.guess_result,
-                self.progress,
+                self.statusbar,
                 self.input_label,
                 self.input_border,
                 self.input,
@@ -61,19 +62,28 @@ class CursesUi(Ui):
         curses.noecho()
         curses.start_color()
         if curses.has_colors():
-            curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_BLUE)
-            curses.init_pair(2, curses.COLOR_BLACK, curses.COLOR_WHITE)
+            white = curses.COLOR_WHITE
+            gray = curses.COLOR_BLACK
+            if curses.COLORS >= 16:
+                white += 8
+                gray += 8
+            curses.init_pair(1, white, curses.COLOR_BLUE)
+            curses.init_pair(2, curses.COLOR_BLACK, white)
+            curses.init_pair(3, white, gray)
         self._windows = self._Windows(self._stdscr, self._key_input)
 
+    # Ignore invalid name for ch (we're reusing the existing name from the curses module)
+    # pylint: disable=invalid-name
     def _key_input(self, ch):
         if ch == curses.KEY_RESIZE:
             for win in self._windows.all:
                 win.redraw()
 
-    def display_flashcard(self, index: int, total: int, flashcard: str, max_key_length: int):
-        self._windows.progress.set_text(
+    def display_flashcard(
+        self, index: int, total: int, flashcard: str, max_key_length: int
+    ):
+        self._windows.statusbar.set_text(
             text=self.translations("progress").format(index=index, total=total),
-            color_attrs=curses.A_DIM,
         )
 
         # make sure the flashcard width and input box with are both multiples of
