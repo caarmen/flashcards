@@ -84,7 +84,9 @@ class CursesUi(Ui):
         )
         return wide_char_count + len(text)
 
-    def _display_text(self, win, offset_y: int, text: str, color_pair=None):
+    def _display_text(
+        self, win, offset_y: int, text: str, color_pair=None, color_attrs=curses.A_BOLD
+    ):
         begin_y, begin_x = self._get_text_coordinates(
             offset_y=offset_y, text_length=self._text_width(text)
         )
@@ -100,7 +102,7 @@ class CursesUi(Ui):
         win.resize(1, self._text_width(text))
         win.mvwin(begin_y, begin_x)
         try:
-            win.addstr(0, 0, text, curses.A_BOLD)
+            win.addstr(0, 0, text, color_pair | color_attrs)
         except curses.error:
             pass
         win.refresh()
@@ -130,8 +132,9 @@ class CursesUi(Ui):
     ):
         self._display_text(
             win=self._windows.progress,
-            offset_y=7,
+            offset_y=int(self._lines / 2),
             text=self.translations("progress").format(index=index, total=total),
+            color_attrs=curses.A_DIM,
         )
         flashcard_width = max_key_length + 8
         if flashcard_width % 2 != 0:
@@ -169,6 +172,7 @@ class CursesUi(Ui):
             win=self._windows.input_label,
             offset_y=1,
             text=self.translations("play_again"),
+            color_attrs=curses.A_BLINK,
         )
         self._windows.input.clear()
         self._windows.input_border.clear()
@@ -206,6 +210,7 @@ class CursesUi(Ui):
             text=self.translations("game_score").format(
                 correct_count=correct_count, guessed_count=guessed_count
             ),
+            color_attrs=curses.A_UNDERLINE,
         )
 
     def game_over(self):
