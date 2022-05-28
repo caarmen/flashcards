@@ -5,6 +5,8 @@ from typing import Callable
 
 import unicodedata
 
+from flashcards.cursesui.utils import safe_win_addstr
+
 
 def _text_width(text: str) -> int:
     wide_char_count = sum(
@@ -64,10 +66,7 @@ class TextWindow(_BaseWindow):
 
         self.win.resize(1, max(_text_width(text), 1))
         self.win.mvwin(begin_y, begin_x)
-        try:
-            self.win.addstr(0, 0, text, self._color_pair | self._color_attrs)
-        except curses.error:
-            pass
+        safe_win_addstr(self.win, 0, 0, text, self._color_pair | self._color_attrs)
         self.win.refresh()
 
     def redraw(self):
@@ -136,11 +135,7 @@ class Input(_BaseWindow):
         self.win.bkgd(" ", curses.color_pair(0))
         self.win.mvwin(begin_y, begin_x)
         self.win.move(0, 0)
-        try:
-            self.win.addstr(0, 0, text)
-            curses.curs_set(1)
-        except curses.error:
-            pass
+        safe_win_addstr(self.win, 0, 0, text)
         self.win.refresh()
 
     def wait_for_key(self) -> str:

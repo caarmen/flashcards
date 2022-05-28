@@ -3,6 +3,7 @@ Curses-based console user interface
 """
 import curses
 
+from flashcards.cursesui.utils import safe_curses_curs_set
 from flashcards.cursesui.windows import BackgroundWindow, TextWindow, FlashcardBackground, Input, InputBorder
 from flashcards.cursesui.unicodetextbox import UnicodeTextbox
 from flashcards.ui import Ui
@@ -94,16 +95,10 @@ class CursesUi(Ui):
         self._windows.input_border.hide()
         self._windows.input_label.win.move(0, 0)
         self._windows.input_label.redraw()
-        try:
-            curses.curs_set(0)
-        except curses.error:
-            pass
+        safe_curses_curs_set(0)
         key = self._windows.input.wait_for_key()
         do_replay = (key.casefold() == self.translations("answer_yes").casefold())
-        try:
-            curses.curs_set(1)
-        except curses.error:
-            pass
+        safe_curses_curs_set(1)
         self._windows.score.hide()
         self._windows.input_label.hide()
         self._windows.guess_result.hide()
@@ -126,15 +121,9 @@ class CursesUi(Ui):
         )
 
     def game_over(self):
-        try:
-            curses.curs_set(0)
-        except curses.error:
-            pass
+        safe_curses_curs_set(0)
         self._windows.input.wait_for_key()
-        try:
-            curses.curs_set(1)
-        except curses.error:
-            pass
+        safe_curses_curs_set(1)
         curses.nocbreak()
         self._stdscr.keypad(False)
         curses.echo()

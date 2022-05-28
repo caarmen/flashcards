@@ -5,6 +5,8 @@ import curses
 from curses.ascii import isprint, iscntrl
 from curses.textpad import Textbox
 
+from flashcards.cursesui.utils import safe_win_addch
+
 
 class UnicodeTextbox(Textbox):
     """
@@ -19,10 +21,7 @@ class UnicodeTextbox(Textbox):
     def do_command(self, ch):
         if ch < 0 or isprint(ch) or iscntrl(ch) or curses.KEY_MIN < ch < curses.KEY_MAX:
             return super().do_command(ch)
-        try:
-            self.win.addch(ch)
-        except curses.error:
-            pass
+        safe_win_addch(ch)
         return 1
 
     def gather(self) -> str:
