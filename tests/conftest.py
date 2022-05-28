@@ -33,7 +33,7 @@ def fixture_ui_factory():
         def display_wrong_guess(self, key: str, guess: str, correct_answer: str):
             pass
 
-        async def input_guess(self, flashcard: str) -> str:
+        async def input_guess(self, flashcard: str, max_answer_length: int) -> str:
             return self.guesses.get(flashcard)
 
         async def input_replay_missed_cards(self) -> bool:
@@ -54,6 +54,7 @@ def fixture_provider_factory():
     """
     :return: Factory to create a FlashcardProvider with hardcoded flashcard data
     """
+
     # pylint: disable=too-few-public-methods
     class TestFlashcardProvider(FlashcardProvider):
         """

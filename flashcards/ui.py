@@ -16,7 +16,7 @@ class Ui(metaclass=abc.ABCMeta):
         """
 
     @abc.abstractmethod
-    async def input_guess(self, flashcard: str) -> str:
+    async def input_guess(self, flashcard: str, max_answer_length: int) -> str:
         """
         Input the user's guess for the given flaskcard
         """

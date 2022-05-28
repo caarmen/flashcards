@@ -124,13 +124,13 @@ class CursesUi(Ui):
             ),
         )
 
-    async def input_guess(self, flashcard: str) -> str:
+    async def input_guess(self, flashcard: str, max_answer_length: int) -> str:
         self._display_text(
             win=self._windows.input_label,
             offset_y_pct=0.5,
             text=self.translations("guess_prompt"),
         )
-        return self._input_text(offset_y_pct=0.66, length=20)
+        return self._input_text(offset_y_pct=0.66, length=max_answer_length + 1)
 
     async def input_replay_missed_cards(self) -> bool:
         self._windows.input.clear()
