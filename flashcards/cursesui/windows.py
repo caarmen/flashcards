@@ -9,9 +9,7 @@ from flashcards.cursesui.safe_curses import safe_win_addstr, safe_curses_curs_se
 
 
 def _text_width(text: str) -> int:
-    wide_char_count = sum(
-        [1 for ch in text if unicodedata.east_asian_width(ch) == "W"]
-    )
+    wide_char_count = sum([1 for ch in text if unicodedata.east_asian_width(ch) == "W"])
     return wide_char_count + len(text)
 
 
@@ -76,7 +74,6 @@ class TextWindow(_BaseWindow):
 
 
 class FlashcardBackground(_BaseWindow):
-
     def __init__(self, parent_win):
         super().__init__(parent_win=parent_win)
         self.width = 0
@@ -88,9 +85,7 @@ class FlashcardBackground(_BaseWindow):
         self.win.refresh()
         self.win.resize(5, self.width)
         self.win.bkgd(" ", curses.color_pair(1) | curses.A_REVERSE)
-        self.win.mvwin(
-            int(screen_lines / 2) - 5, int((screen_cols - self.width) / 2)
-        )
+        self.win.mvwin(int(screen_lines / 2) - 5, int((screen_cols - self.width) / 2))
         self.win.box()
         self.win.refresh()
 

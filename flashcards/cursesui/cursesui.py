@@ -4,7 +4,13 @@ Curses-based console user interface
 import curses
 
 from flashcards.cursesui.safe_curses import safe_curses_curs_set
-from flashcards.cursesui.windows import BackgroundWindow, TextWindow, FlashcardBackground, Input, InputBorder
+from flashcards.cursesui.windows import (
+    BackgroundWindow,
+    TextWindow,
+    FlashcardBackground,
+    Input,
+    InputBorder,
+)
 from flashcards.cursesui.unicodetextbox import UnicodeTextbox
 from flashcards.ui import Ui
 
@@ -19,14 +25,24 @@ class CursesUi(Ui):
         def __init__(self, root_window):
             # pylint: disable=no-member
             self.main = BackgroundWindow(root_window, color_pair=curses.color_pair(1))
-            self.guess_result = TextWindow(parent_win=root_window, offset_y=lambda lines: int(lines / 2) - 8)
-            self.progress = TextWindow(parent_win=root_window, offset_y=lambda lines: lines - 1)
+            self.guess_result = TextWindow(
+                parent_win=root_window, offset_y=lambda lines: int(lines / 2) - 8
+            )
+            self.progress = TextWindow(
+                parent_win=root_window, offset_y=lambda lines: lines - 1
+            )
             self.card_bkgd = FlashcardBackground(parent_win=root_window)
-            self.card_text = TextWindow(parent_win=root_window, offset_y=lambda lines: int(lines / 2) - 3)
-            self.input_label = TextWindow(parent_win=root_window, offset_y=lambda lines: int(lines / 2) + 3)
+            self.card_text = TextWindow(
+                parent_win=root_window, offset_y=lambda lines: int(lines / 2) - 3
+            )
+            self.input_label = TextWindow(
+                parent_win=root_window, offset_y=lambda lines: int(lines / 2) + 3
+            )
             self.input = Input(parent_win=root_window)
             self.input_border = InputBorder(parent_win=root_window)
-            self.score = TextWindow(parent_win=root_window, offset_y=lambda lines: int(lines / 2) + 6)
+            self.score = TextWindow(
+                parent_win=root_window, offset_y=lambda lines: int(lines / 2) + 6
+            )
             self.all = [
                 self.main,
                 self.guess_result,
@@ -58,7 +74,7 @@ class CursesUi(Ui):
         return ch
 
     def display_flashcard(
-            self, index: int, total: int, flashcard: str, max_key_length: int
+        self, index: int, total: int, flashcard: str, max_key_length: int
     ):
         self._windows.progress.set_text(
             text=self.translations("progress").format(index=index, total=total),
@@ -97,7 +113,7 @@ class CursesUi(Ui):
         self._windows.input_label.redraw()
         safe_curses_curs_set(0)
         key = self._windows.input.wait_for_key()
-        do_replay = (key.casefold() == self.translations("answer_yes").casefold())
+        do_replay = key.casefold() == self.translations("answer_yes").casefold()
         safe_curses_curs_set(1)
         self._windows.score.hide()
         self._windows.input_label.hide()
