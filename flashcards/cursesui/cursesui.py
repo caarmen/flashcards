@@ -79,7 +79,7 @@ class CursesUi(Ui):
             flashcard_width += 1
 
         self._windows.card_bkgd.width = flashcard_width
-        self._windows.card_bkgd.set_text("")
+        self._windows.card_bkgd.redraw()
         self._windows.card_text.set_text(
             text=self.translations("display_flashcard").format(key=flashcard),
             color_pair=curses.color_pair(2),

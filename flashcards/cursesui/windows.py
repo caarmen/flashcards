@@ -1,3 +1,4 @@
+import abc
 import curses
 from curses.textpad import rectangle
 from typing import Callable
@@ -12,11 +13,20 @@ def _text_width(text: str) -> int:
     return wide_char_count + len(text)
 
 
-class BackgroundWindow:
-    def __init__(self, parent_win, color_pair):
+class _BaseWindow:
+    def __init__(self, parent_win, initial_lines: int = 1, initial_cols: int = 1):
         self._parent_win = parent_win
-        screen_lines, screen_cols = self._parent_win.getmaxyx()
-        self.win = curses.newwin(screen_lines, screen_cols)
+        self.win = curses.newwin(initial_lines, initial_cols)
+
+    @abc.abstractmethod
+    def redraw(self):
+        pass
+
+
+class BackgroundWindow(_BaseWindow):
+    def __init__(self, parent_win, color_pair):
+        screen_lines, screen_cols = parent_win.getmaxyx()
+        super().__init__(parent_win, screen_lines, screen_cols)
         self.win.bkgd(" ", color_pair)
         self.win.refresh()
 
@@ -26,10 +36,9 @@ class BackgroundWindow:
         self.win.refresh()
 
 
-class TextWindow:
+class TextWindow(_BaseWindow):
     def __init__(self, parent_win, offset_y: Callable[[int, int], int]):
-        self._parent_win = parent_win
-        self.win = curses.newwin(1, 1)
+        super().__init__(parent_win)
         self._offset_y = offset_y
         self._color_pair = curses.color_pair(1)
         self._color_attrs = curses.A_BOLD
@@ -72,13 +81,13 @@ class TextWindow:
                 return chr(ch)
 
 
-class FlashcardBackground(TextWindow):
+class FlashcardBackground(_BaseWindow):
 
     def __init__(self, parent_win):
-        super().__init__(parent_win=parent_win, offset_y=lambda lines, cols: int(lines / 2) - 5)
+        super().__init__(parent_win=parent_win)
         self.width = 0
 
-    def set_text(self, text: str, color_pair: int = None, color_attrs: int = curses.A_BOLD):
+    def redraw(self):
         screen_lines, screen_cols = self._parent_win.getmaxyx()
         self.win.erase()
         self.win.bkgd(" ", curses.color_pair(1))
