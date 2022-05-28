@@ -70,7 +70,7 @@ class CursesUi(Ui):
             pass
         win.refresh()
 
-    def _input_text(self, offset_y_pct: float, length: int) -> str:
+    def _display_input_box(self, offset_y_pct: float, length: int):
         self._windows.input.clear()
         begin_y, begin_x = self._get_text_coordinates(
             offset_y_pct=offset_y_pct, text_length=length
@@ -84,6 +84,9 @@ class CursesUi(Ui):
         self._windows.input.resize(1, length)
         self._windows.input.mvwin(begin_y, begin_x)
         self._windows.input.move(0, 0)
+
+    def _input_text(self, offset_y_pct: float, length: int) -> str:
+        self._display_input_box(offset_y_pct=offset_y_pct, length=length)
         text_box = Textbox(self._windows.input, insert_mode=True)
         return text_box.edit(validate=lambda x: x if x != 127 else curses.KEY_BACKSPACE).strip()
 
