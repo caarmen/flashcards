@@ -86,6 +86,12 @@ class _TextWindow:
         self.win.bkgd(" ", curses.color_pair(1))
         self.win.refresh()
 
+    def wait_for_key(self) -> str:
+        while True:
+            ch = self.win.getch()
+            if ch > 0 and ch != curses.KEY_RESIZE:
+                return chr(ch)
+
 
 class _FlashcardBackground(_TextWindow):
 
@@ -261,16 +267,15 @@ class CursesUi(Ui):
             curses.curs_set(0)
         except curses.error:
             pass
-        do_replay = (
-                self._windows.input.win.getkey().casefold()
-                == self.translations("answer_yes").casefold()
-        )
+        key = self._windows.input.wait_for_key()
+        do_replay = (key.casefold() == self.translations("answer_yes").casefold())
         try:
             curses.curs_set(1)
         except curses.error:
             pass
         self._windows.score.hide()
         self._windows.input_label.hide()
+        self._windows.guess_result.hide()
         return do_replay
 
     def display_right_guess(self, key: str, correct_answer: str):
@@ -296,7 +301,7 @@ class CursesUi(Ui):
             curses.curs_set(0)
         except curses.error:
             pass
-        self._windows.input.win.getch()
+        self._windows.input.wait_for_key()
         try:
             curses.curs_set(1)
         except curses.error:
