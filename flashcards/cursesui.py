@@ -78,7 +78,7 @@ class _TextWindow:
         self.win.refresh()
 
     def redraw(self):
-        text = self.win.instr(0, 0).decode("utf-8")
+        text = self.win.instr(0, 0).decode("utf-8").strip()
         self.set_text(text, color_pair=self._color_pair, color_attrs=self._color_attrs)
 
 
@@ -127,14 +127,13 @@ class _Input(_TextWindow):
         self.width = 0
 
     def set_text(self, text: str, color_pair: int = None, color_attrs: int = curses.A_BOLD):
-        #super().set_text(text, color_pair, color_attrs)
         self.win.clear()
         screen_lines, screen_cols = self._parent_win.getmaxyx()
         begin_x = int((screen_cols - self.width) / 2)
         begin_y = self._offset_y(screen_lines, screen_cols)
 
         self.win.move(0, 0)
-        self.win.bkgd(" ", self._color_pair)
+        self.win.bkgd(" ", curses.color_pair(1))
         self.win.clrtoeol()
         self.win.refresh()
 
@@ -143,7 +142,7 @@ class _Input(_TextWindow):
         self.win.mvwin(begin_y, begin_x)
         self.win.move(0, 0)
         try:
-            self.win.addstr(0, 0, text, self._color_pair | self._color_attrs)
+            self.win.addstr(0, 0, text)
         except curses.error:
             pass
         self.win.refresh()
