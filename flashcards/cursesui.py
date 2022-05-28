@@ -125,13 +125,15 @@ class CursesUi(Ui):
         text_box = UnicodeTextbox(self._windows.input, length=length)
         return text_box.edit(validate=lambda x: x if x != 127 else curses.KEY_BACKSPACE)
 
-    def display_flashcard(self, index: int, total: int, flashcard: str):
+    def display_flashcard(
+        self, index: int, total: int, flashcard: str, max_key_length: int
+    ):
         self._display_text(
             win=self._windows.progress,
             offset_y=7,
             text=self.translations("progress").format(index=index, total=total),
         )
-        flashcard_width = len(flashcard) + 8
+        flashcard_width = max_key_length + 8
         self._windows.card_bkgd.erase()
         self._windows.card_bkgd.bkgd(" ", curses.color_pair(1))
         self._windows.card_bkgd.refresh()
@@ -160,7 +162,7 @@ class CursesUi(Ui):
     async def input_replay_missed_cards(self) -> bool:
         self._display_text(
             win=self._windows.input_label,
-            offset_y=0,
+            offset_y=1,
             text=self.translations("play_again"),
         )
         self._windows.input.clear()

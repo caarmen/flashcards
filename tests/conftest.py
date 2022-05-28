@@ -24,7 +24,9 @@ def fixture_ui_factory():
             self.guessed_count = 0
             self.guesses = guesses
 
-        def display_flashcard(self, index: int, total: int, flashcard: str):
+        def display_flashcard(
+            self, index: int, total: int, flashcard: str, max_key_length: int
+        ):
             pass
 
         def display_right_guess(self, key: str, correct_answer: str):

@@ -13,7 +13,9 @@ class TextUi(Ui):
     def __init__(self, translations):
         self.translations = translations
 
-    def display_flashcard(self, index: int, total: int, flashcard: str):
+    def display_flashcard(
+        self, index: int, total: int, flashcard: str, max_key_length: int
+    ):
         print(self.translations("progress").format(index=index, total=total))
         print(self.translations("display_flashcard").format(key=flashcard))
 
