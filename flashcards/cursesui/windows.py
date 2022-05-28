@@ -5,7 +5,7 @@ from typing import Callable
 
 import unicodedata
 
-from flashcards.cursesui.safe_curses import safe_win_addstr
+from flashcards.cursesui.safe_curses import safe_win_addstr, safe_curses_curs_set
 
 
 def _text_width(text: str) -> int:
@@ -50,14 +50,15 @@ class TextWindow(_BaseWindow):
         self._color_pair = curses.color_pair(1)
         self._color_attrs = curses.A_BOLD
 
-    def set_text(self, text: str, color_pair: int = None, color_attrs: int = curses.A_BOLD):
+    def set_text(self, text: str, color_pair: int = None, color_attrs: int = None):
         screen_lines, screen_cols = self._parent_win.getmaxyx()
         begin_x = int((screen_cols - _text_width(text)) / 2)
         begin_y = self._offset_y(screen_lines)
 
         if color_pair:
             self._color_pair = color_pair
-        self._color_attrs = color_attrs
+        if color_attrs:
+            self._color_attrs = color_attrs
 
         self.win.move(0, 0)
         self.win.bkgd(" ", self._color_pair)
@@ -71,7 +72,7 @@ class TextWindow(_BaseWindow):
 
     def redraw(self):
         text = self.win.instr(0, 0).decode("utf-8").strip()
-        self.set_text(text, color_pair=self._color_pair, color_attrs=self._color_attrs)
+        self.set_text(text)
 
 
 class FlashcardBackground(_BaseWindow):
@@ -136,6 +137,7 @@ class Input(_BaseWindow):
         self.win.mvwin(begin_y, begin_x)
         self.win.move(0, 0)
         safe_win_addstr(self.win, 0, 0, text)
+        safe_curses_curs_set(1)
         self.win.refresh()
 
     def wait_for_key(self) -> str:
