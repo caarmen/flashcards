@@ -26,22 +26,22 @@ class CursesUi(Ui):
             # pylint: disable=no-member
             self.main = BackgroundWindow(root_window, color_pair=curses.color_pair(1))
             self.guess_result = TextWindow(
-                parent_win=root_window, offset_y=lambda lines: int(lines / 2) - 8
+                parent_win=root_window, offset_y=lambda lines: lines // 2 - 8
             )
             self.progress = TextWindow(
                 parent_win=root_window, offset_y=lambda lines: lines - 1
             )
             self.card_bkgd = FlashcardBackground(parent_win=root_window)
             self.card_text = TextWindow(
-                parent_win=root_window, offset_y=lambda lines: int(lines / 2) - 3
+                parent_win=root_window, offset_y=lambda lines: lines // 2 - 3
             )
             self.input_label = TextWindow(
-                parent_win=root_window, offset_y=lambda lines: int(lines / 2) + 3
+                parent_win=root_window, offset_y=lambda lines: lines // 2 + 3
             )
             self.input = Input(parent_win=root_window, callback=lambda ch: key_input_callback(ch))
             self.input_border = InputBorder(parent_win=root_window)
             self.score = TextWindow(
-                parent_win=root_window, offset_y=lambda lines: int(lines / 2) + 6
+                parent_win=root_window, offset_y=lambda lines: lines // 2 + 6
             )
             self.all = [
                 self.main,
@@ -75,6 +75,9 @@ class CursesUi(Ui):
             text=self.translations("progress").format(index=index, total=total),
             color_attrs=curses.A_DIM,
         )
+
+        # make sure the flashcard width and input box with are both multiples of
+        # 2, so they'll be alignedhorizontally.
         flashcard_width = max_key_length + 8
         if flashcard_width % 2 != 0:
             flashcard_width += 1

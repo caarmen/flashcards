@@ -84,7 +84,7 @@ class TextWindow(_BaseWindow):
         """
         self.show()
         screen_lines, screen_cols = self._parent_win.getmaxyx()
-        begin_x = int((screen_cols - _text_width(text)) / 2)
+        begin_x = (screen_cols - _text_width(text)) // 2
         begin_y = self._offset_y(screen_lines)
 
         if color_pair:
@@ -127,7 +127,7 @@ class FlashcardBackground(_BaseWindow):
         self.win.refresh()
         self.win.resize(5, self.width)
         self.win.bkgd(" ", curses.color_pair(1) | curses.A_REVERSE)
-        self.win.mvwin(int(screen_lines / 2) - 5, int((screen_cols - self.width) / 2))
+        self.win.mvwin(screen_lines // 2 - 5, (screen_cols - self.width) // 2)
         self.win.box()
         self.win.refresh()
 
@@ -145,8 +145,8 @@ class InputBorder(_BaseWindow):
         if not self._visible:
             return
         screen_lines, screen_cols = self._parent_win.getmaxyx()
-        begin_x = int((screen_cols - self.width) / 2)
-        begin_y = int(screen_lines / 2) + 2
+        begin_x = (screen_cols - self.width) // 2
+        begin_y = screen_lines // 2 + 2
         self.win.bkgd(" ", curses.color_pair(1))
         self.win.erase()
         self.win.refresh()
@@ -174,8 +174,8 @@ class Input(_BaseWindow):
             text = self.win.instr(0, 0).decode("utf-8").strip()
         self.win.clear()
         screen_lines, screen_cols = self._parent_win.getmaxyx()
-        begin_x = int((screen_cols - self.width) / 2)
-        begin_y = int(screen_lines / 2) + 2
+        begin_x = (screen_cols - self.width) // 2
+        begin_y = screen_lines // 2 + 2
 
         self.win.move(0, 0)
         self.win.bkgd(" ", curses.color_pair(1))
