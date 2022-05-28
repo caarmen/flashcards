@@ -20,6 +20,7 @@ class Engine:
 
     async def _play_deck(self, deck: dict[str, str]):
         keys = list(deck.keys())
+        max_answer_length = max([len(x) for x in deck.values()])
         random.shuffle(keys)
         self.correct_count = 0
         self.guessed_count = 0
@@ -28,7 +29,7 @@ class Engine:
             self.game_ui.display_flashcard(
                 index=index + 1, total=len(keys), flashcard=key
             )
-            guess = (await self.game_ui.input_guess(key)).strip()
+            guess = (await self.game_ui.input_guess(key, max_answer_length)).strip()
             correct_answer = deck[key]
             if guess.casefold() == correct_answer.casefold():
                 self.correct_count += 1

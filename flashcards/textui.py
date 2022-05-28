@@ -20,7 +20,7 @@ class TextUi(Ui):
             )
         )
 
-    async def input_guess(self, flashcard: str) -> str:
+    async def input_guess(self, flashcard: str, max_answer_length: int) -> str:
         return input(self.translations("guess_prompt"))
 
     async def input_replay_missed_cards(self) -> bool:
