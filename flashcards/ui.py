@@ -10,7 +10,9 @@ class Ui(metaclass=abc.ABCMeta):
     """
 
     @abc.abstractmethod
-    def display_flashcard(self, index: int, total: int, flashcard: str):
+    def display_flashcard(
+        self, index: int, total: int, flashcard: str, max_key_length: int
+    ):
         """
         Display the flashcard
         """

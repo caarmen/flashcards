@@ -18,7 +18,9 @@ class Engine:
         self.guessed_count = 0
         self.provider = provider
 
-    async def _play_deck(self, deck: dict[str, str], max_answer_length: int):
+    async def _play_deck(
+        self, deck: dict[str, str], max_key_length: int, max_answer_length: int
+    ):
         keys = list(deck.keys())
         random.shuffle(keys)
         self.correct_count = 0
@@ -26,7 +28,10 @@ class Engine:
         wrong_guesses = {}
         for index, key in enumerate(keys):
             self.game_ui.display_flashcard(
-                index=index + 1, total=len(keys), flashcard=key
+                index=index + 1,
+                total=len(keys),
+                flashcard=key,
+                max_key_length=max_key_length,
             )
             guess = (await self.game_ui.input_guess(key, max_answer_length)).strip()
             correct_answer = deck[key]
@@ -40,15 +45,16 @@ class Engine:
         self.game_ui.display_score(self.correct_count, self.guessed_count)
         if wrong_guesses:
             if await self.game_ui.input_replay_missed_cards():
-                await self._play_deck(wrong_guesses, max_answer_length)
+                await self._play_deck(wrong_guesses, max_key_length, max_answer_length)
 
     async def play(self):
         """
         Play a game
         """
         flashcards = self.provider.flashcards()
+        max_key_length = max([len(x) for x in flashcards.keys()])
         max_answer_length = max([len(x) for x in flashcards.values()])
-        await self._play_deck(flashcards, max_answer_length)
+        await self._play_deck(flashcards, max_key_length, max_answer_length)
         self.game_ui.game_over()
 
     async def game_interrupted(self):
