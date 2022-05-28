@@ -6,8 +6,11 @@ msgstr ""
 msgid "main_text"
 msgstr "Hello world"
 
+msgid "progress"
+msgstr "{index} of {total}"
+
 msgid "display_flashcard"
-msgstr "{index} of {total}: {key}"
+msgstr "{key}"
 
 msgid "right_guess"
 msgstr "Correct! 👏"

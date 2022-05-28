@@ -14,11 +14,8 @@ class TextUi(Ui):
         self.translations = translations
 
     def display_flashcard(self, index: int, total: int, flashcard: str):
-        print(
-            self.translations("display_flashcard").format(
-                index=index, total=total, key=flashcard
-            )
-        )
+        print(self.translations("progress").format(index=index, total=total))
+        print(self.translations("display_flashcard").format(key=flashcard))
 
     async def input_guess(self, flashcard: str, max_answer_length: int) -> str:
         return input(self.translations("guess_prompt"))
