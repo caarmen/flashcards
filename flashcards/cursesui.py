@@ -57,7 +57,6 @@ class CursesUi(Ui):
         curses.noecho()
         curses.start_color()
         if curses.has_colors():
-            curses.use_default_colors()
             curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_BLUE)
             curses.init_pair(2, curses.COLOR_BLACK, curses.COLOR_WHITE)
         self._windows = self._Windows()
@@ -117,11 +116,13 @@ class CursesUi(Ui):
         )
 
         self._windows.input_border.resize(3, length + 3)
+        self._windows.input_border.bkgd(" ", curses.color_pair(0))
         self._windows.input_border.mvwin(begin_y - 1, begin_x - 1)
         rectangle(self._windows.input_border, 0, 0, 2, length + 1)
         self._windows.input_border.refresh()
 
         self._windows.input.resize(1, length)
+        self._windows.input.bkgd(" ", curses.color_pair(0))
         self._windows.input.mvwin(begin_y, begin_x)
         self._windows.input.move(0, 0)
 
@@ -179,6 +180,8 @@ class CursesUi(Ui):
         )
         self._windows.input.clear()
         self._windows.input_border.clear()
+        self._windows.input.bkgd(" ", curses.color_pair(1))
+        self._windows.input_border.bkgd(" ", curses.color_pair(1))
         self._windows.input.refresh()
         self._windows.input_border.refresh()
         self._windows.input_label.move(0, 0)
