@@ -2,6 +2,7 @@
 Curses-based console user interface
 """
 import curses
+from typing import Callable
 
 from flashcards.cursesui.safe_curses import safe_curses_curs_set
 from flashcards.cursesui.windows import (
@@ -11,7 +12,6 @@ from flashcards.cursesui.windows import (
     Input,
     InputBorder,
 )
-from flashcards.cursesui.unicodetextbox import UnicodeTextbox
 from flashcards.ui import Ui
 
 
@@ -22,7 +22,7 @@ class CursesUi(Ui):
 
     # pylint: disable=too-few-public-methods,too-many-instance-attributes
     class _Windows:
-        def __init__(self, root_window):
+        def __init__(self, root_window, key_input_callback: Callable[[int], None]):
             # pylint: disable=no-member
             self.main = BackgroundWindow(root_window, color_pair=curses.color_pair(1))
             self.guess_result = TextWindow(
@@ -38,7 +38,7 @@ class CursesUi(Ui):
             self.input_label = TextWindow(
                 parent_win=root_window, offset_y=lambda lines: int(lines / 2) + 3
             )
-            self.input = Input(parent_win=root_window)
+            self.input = Input(parent_win=root_window, callback=lambda ch: key_input_callback(ch))
             self.input_border = InputBorder(parent_win=root_window)
             self.score = TextWindow(
                 parent_win=root_window, offset_y=lambda lines: int(lines / 2) + 6
@@ -63,21 +63,14 @@ class CursesUi(Ui):
         if curses.has_colors():
             curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_BLUE)
             curses.init_pair(2, curses.COLOR_BLACK, curses.COLOR_WHITE)
-        self._windows = self._Windows(self._stdscr)
+        self._windows = self._Windows(self._stdscr, self._key_input)
 
-    # Ignore invalid name for ch (we're reusing the existing name from the curses module)
-    # pylint: disable=invalid-name
-    def _input_validator(self, ch):
-        if ch == 127:
-            return curses.KEY_BACKSPACE
+    def _key_input(self, ch):
         if ch == curses.KEY_RESIZE:
             for win in self._windows.all:
                 win.redraw()
-        return ch
 
-    def display_flashcard(
-        self, index: int, total: int, flashcard: str, max_key_length: int
-    ):
+    def display_flashcard(self, index: int, total: int, flashcard: str, max_key_length: int):
         self._windows.progress.set_text(
             text=self.translations("progress").format(index=index, total=total),
             color_attrs=curses.A_DIM,
@@ -101,8 +94,7 @@ class CursesUi(Ui):
         self._windows.input_border.redraw()
         self._windows.input.width = input_width
         self._windows.input.redraw(text="")
-        text_box = UnicodeTextbox(self._windows.input.win, length=input_width)
-        return text_box.edit(validate=self._input_validator)
+        return self._windows.input.wait_for_string()
 
     async def input_replay_missed_cards(self) -> bool:
         self._windows.input_label.set_text(

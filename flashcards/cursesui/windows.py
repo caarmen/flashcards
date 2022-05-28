@@ -8,6 +8,7 @@ from typing import Callable
 
 import unicodedata
 
+from flashcards.cursesui.unicodetextbox import UnicodeTextbox
 from flashcards.cursesui.safe_curses import safe_win_addstr, safe_curses_curs_set
 
 
@@ -144,8 +145,9 @@ class Input(_BaseWindow):
     Displays the input field
     """
 
-    def __init__(self, parent_win):
+    def __init__(self, parent_win, callback: Callable[[int], None]):
         super().__init__(parent_win=parent_win)
+        self._callback = callback
         self.width = 0
 
     def redraw(self, text: str = None):
@@ -168,6 +170,19 @@ class Input(_BaseWindow):
         safe_win_addstr(self.win, 0, 0, text)
         safe_curses_curs_set(1)
         self.win.refresh()
+
+    # Ignore invalid name for ch (we're reusing the existing name from the curses module)
+    # pylint: disable=invalid-name
+    def _input_validator(self, ch):
+        if ch == 127:
+            return curses.KEY_BACKSPACE
+        if ch == curses.KEY_RESIZE:
+            self._callback(ch)
+        return ch
+
+    def wait_for_string(self) -> str:
+        text_box = UnicodeTextbox(self.win, length=self.width)
+        return text_box.edit(validate=self._input_validator)
 
     def wait_for_key(self) -> str:
         """
