@@ -82,6 +82,26 @@ class _TextWindow:
         self.set_text(text, color_pair=self._color_pair, color_attrs=self._color_attrs)
 
 
+class _FlashcardBackground(_TextWindow):
+
+    def __init__(self, parent_win):
+        super().__init__(parent_win=parent_win, offset_y=lambda lines, cols: int(lines / 2) - 5)
+        self.width = 0
+
+    def set_text(self, text: str, color_pair: int = None, color_attrs: int = curses.A_BOLD):
+        screen_lines, screen_cols = self._parent_win.getmaxyx()
+        self.win.erase()
+        self.win.bkgd(" ", curses.color_pair(1))
+        self.win.refresh()
+        self.win.resize(5, self.width)
+        self.win.bkgd(" ", curses.color_pair(1) | curses.A_REVERSE)
+        self.win.mvwin(
+            int(screen_lines / 2) - 5, int((screen_cols - self.width) / 2)
+        )
+        self.win.box()
+        self.win.refresh()
+
+
 class CursesUi(Ui):
     """
     Interact with the user in the flashcard game, in a console using curses
@@ -94,12 +114,20 @@ class CursesUi(Ui):
             self.main = curses.newwin(curses.LINES, curses.COLS)
             self.guess_result = _TextWindow(parent_win=root_window, offset_y=lambda lines, cols: int(lines / 2) - 8)
             self.progress = _TextWindow(parent_win=root_window, offset_y=lambda lines, cols: lines - 1)
-            self.card_bkgd = _TextWindow(parent_win=root_window, offset_y=lambda lines, cols: int(lines / 2) - 5)
+            self.card_bkgd = _FlashcardBackground(parent_win=root_window)
             self.card_text = _TextWindow(parent_win=root_window, offset_y=lambda lines, cols: int(lines / 2) - 3)
             self.input_label = _TextWindow(parent_win=root_window, offset_y=lambda lines, cols: int(lines / 2) - 3)
             self.input = _TextWindow(parent_win=root_window, offset_y=lambda lines, cols: int(lines / 2))
             self.input_border = _TextWindow(parent_win=root_window, offset_y=lambda lines, cols: int(lines / 2))
             self.score = _TextWindow(parent_win=root_window, offset_y=lambda lines, cols: int(lines / 2) + 3)
+            self.text_windows = [
+                self.guess_result,
+                self.progress,
+                self.card_text,
+                self.input_label,
+                self.score,
+                self.card_bkgd
+            ]
 
     def __init__(self, translations):
         self.translations = translations
@@ -147,7 +175,8 @@ class CursesUi(Ui):
         if ch == 127:
             return curses.KEY_BACKSPACE
         if ch == curses.KEY_RESIZE:
-            self._windows.progress.redraw()
+            for win in self._windows.text_windows:
+                win.redraw()
         return ch
 
     def _input_text(self, offset_y: int, length: int) -> str:
@@ -162,30 +191,18 @@ class CursesUi(Ui):
             text=self.translations("progress").format(index=index, total=total),
             color_attrs=curses.A_DIM,
         )
-        """
         flashcard_width = max_key_length + 8
         if flashcard_width % 2 != 0:
             flashcard_width += 1
-        self._windows.card_bkgd.erase()
-        self._windows.card_bkgd.bkgd(" ", curses.color_pair(1))
-        self._windows.card_bkgd.refresh()
-        self._windows.card_bkgd.resize(5, flashcard_width)
-        self._windows.card_bkgd.bkgd(" ", curses.color_pair(1) | curses.A_REVERSE)
-        self._windows.card_bkgd.mvwin(
-            int(self._lines / 2) - 5, int((self._cols - flashcard_width) / 2)
-        )
-        self._windows.card_bkgd.box()
-        self._windows.card_bkgd.refresh()
+
+        self._windows.card_bkgd.width = flashcard_width
+        self._windows.card_bkgd.set_text("")
         self._windows.card_text.set_text(
             text=self.translations("display_flashcard").format(key=flashcard),
             color_pair=curses.color_pair(2),
         )
-        """
 
     async def input_guess(self, flashcard: str, max_answer_length: int) -> str:
-        self._windows.input_label.set_text(
-            text=self.translations("guess_prompt"),
-        )
         input_width = max_answer_length + 1
         if input_width % 2 != 0:
             input_width += 1
