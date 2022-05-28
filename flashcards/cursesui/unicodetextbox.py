@@ -5,7 +5,7 @@ import curses
 from curses.ascii import isprint, iscntrl
 from curses.textpad import Textbox
 
-from flashcards.cursesui.utils import safe_win_addch
+from flashcards.cursesui.safe_curses import safe_win_addch
 
 
 class UnicodeTextbox(Textbox):

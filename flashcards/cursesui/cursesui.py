@@ -3,7 +3,7 @@ Curses-based console user interface
 """
 import curses
 
-from flashcards.cursesui.utils import safe_curses_curs_set
+from flashcards.cursesui.safe_curses import safe_curses_curs_set
 from flashcards.cursesui.windows import BackgroundWindow, TextWindow, FlashcardBackground, Input, InputBorder
 from flashcards.cursesui.unicodetextbox import UnicodeTextbox
 from flashcards.ui import Ui

@@ -5,7 +5,7 @@ from typing import Callable
 
 import unicodedata
 
-from flashcards.cursesui.utils import safe_win_addstr
+from flashcards.cursesui.safe_curses import safe_win_addstr
 
 
 def _text_width(text: str) -> int:
