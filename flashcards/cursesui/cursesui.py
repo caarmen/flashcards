@@ -49,7 +49,7 @@ class CursesUi(Ui):
 
     def _display_input_box(self, length: int):
         self._windows.input_border.width = length
-        self._windows.input_border.set_text("")
+        self._windows.input_border.redraw()
         self._windows.input.width = length
         self._windows.input.set_text("")
 

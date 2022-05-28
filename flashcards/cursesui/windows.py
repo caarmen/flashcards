@@ -101,15 +101,15 @@ class FlashcardBackground(_BaseWindow):
         self.win.refresh()
 
 
-class InputBorder(TextWindow):
+class InputBorder(_BaseWindow):
     def __init__(self, parent_win):
-        super().__init__(parent_win=parent_win, offset_y=lambda lines, cols: int(lines / 2) + 2)
+        super().__init__(parent_win=parent_win)
         self.width = 0
 
-    def set_text(self, text: str, color_pair: int = None, color_attrs: int = curses.A_BOLD):
+    def redraw(self):
         screen_lines, screen_cols = self._parent_win.getmaxyx()
         begin_x = int((screen_cols - self.width) / 2)
-        begin_y = self._offset_y(screen_lines, screen_cols)
+        begin_y = int(screen_lines / 2) + 2
         self.win.bkgd(" ", curses.color_pair(1))
         self.win.erase()
         self.win.refresh()
