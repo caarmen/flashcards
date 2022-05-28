@@ -28,7 +28,7 @@ class Engine:
             self.game_ui.display_flashcard(
                 index=index + 1, total=len(keys), flashcard=key
             )
-            guess = await self.game_ui.input_guess(key)
+            guess = (await self.game_ui.input_guess(key)).strip()
             correct_answer = deck[key]
             if guess.casefold() == correct_answer.casefold():
                 self.correct_count += 1
