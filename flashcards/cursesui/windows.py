@@ -12,7 +12,7 @@ def _text_width(text: str) -> int:
     return wide_char_count + len(text)
 
 
-class _BackgroundWindow:
+class BackgroundWindow:
     def __init__(self, parent_win, color_pair):
         self._parent_win = parent_win
         screen_lines, screen_cols = self._parent_win.getmaxyx()
@@ -26,7 +26,7 @@ class _BackgroundWindow:
         self.win.refresh()
 
 
-class _TextWindow:
+class TextWindow:
     def __init__(self, parent_win, offset_y: Callable[[int, int], int]):
         self._parent_win = parent_win
         self.win = curses.newwin(1, 1)
@@ -72,7 +72,7 @@ class _TextWindow:
                 return chr(ch)
 
 
-class _FlashcardBackground(_TextWindow):
+class FlashcardBackground(TextWindow):
 
     def __init__(self, parent_win):
         super().__init__(parent_win=parent_win, offset_y=lambda lines, cols: int(lines / 2) - 5)
@@ -92,7 +92,7 @@ class _FlashcardBackground(_TextWindow):
         self.win.refresh()
 
 
-class _InputBorder(_TextWindow):
+class InputBorder(TextWindow):
     def __init__(self, parent_win):
         super().__init__(parent_win=parent_win, offset_y=lambda lines, cols: int(lines / 2) + 2)
         self.width = 0
@@ -111,7 +111,7 @@ class _InputBorder(_TextWindow):
         self.win.refresh()
 
 
-class _Input(_TextWindow):
+class Input(TextWindow):
     def __init__(self, parent_win):
         super().__init__(parent_win=parent_win, offset_y=lambda lines, cols: int(lines / 2) + 2)
         self.width = 0

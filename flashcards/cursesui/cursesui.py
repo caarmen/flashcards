@@ -3,7 +3,7 @@ Curses-based console user interface
 """
 import curses
 
-from flashcards.cursesui.windows import _BackgroundWindow, _TextWindow, _FlashcardBackground, _Input, _InputBorder
+from flashcards.cursesui.windows import BackgroundWindow, TextWindow, FlashcardBackground, Input, InputBorder
 from flashcards.cursesui.unicodetextbox import UnicodeTextbox
 from flashcards.ui import Ui
 
@@ -17,15 +17,15 @@ class CursesUi(Ui):
     class _Windows:
         def __init__(self, root_window):
             # pylint: disable=no-member
-            self.main = _BackgroundWindow(root_window, color_pair=curses.color_pair(1))
-            self.guess_result = _TextWindow(parent_win=root_window, offset_y=lambda lines, cols: int(lines / 2) - 8)
-            self.progress = _TextWindow(parent_win=root_window, offset_y=lambda lines, cols: lines - 1)
-            self.card_bkgd = _FlashcardBackground(parent_win=root_window)
-            self.card_text = _TextWindow(parent_win=root_window, offset_y=lambda lines, cols: int(lines / 2) - 3)
-            self.input_label = _TextWindow(parent_win=root_window, offset_y=lambda lines, cols: int(lines / 2) + 3)
-            self.input = _Input(parent_win=root_window)
-            self.input_border = _InputBorder(parent_win=root_window)
-            self.score = _TextWindow(parent_win=root_window, offset_y=lambda lines, cols: int(lines / 2) + 6)
+            self.main = BackgroundWindow(root_window, color_pair=curses.color_pair(1))
+            self.guess_result = TextWindow(parent_win=root_window, offset_y=lambda lines, cols: int(lines / 2) - 8)
+            self.progress = TextWindow(parent_win=root_window, offset_y=lambda lines, cols: lines - 1)
+            self.card_bkgd = FlashcardBackground(parent_win=root_window)
+            self.card_text = TextWindow(parent_win=root_window, offset_y=lambda lines, cols: int(lines / 2) - 3)
+            self.input_label = TextWindow(parent_win=root_window, offset_y=lambda lines, cols: int(lines / 2) + 3)
+            self.input = Input(parent_win=root_window)
+            self.input_border = InputBorder(parent_win=root_window)
+            self.score = TextWindow(parent_win=root_window, offset_y=lambda lines, cols: int(lines / 2) + 6)
             self.text_windows = [
                 self.guess_result,
                 self.progress,
