@@ -134,6 +134,8 @@ class CursesUi(Ui):
             text=self.translations("progress").format(index=index, total=total),
         )
         flashcard_width = max_key_length + 8
+        if flashcard_width % 2 != 0:
+            flashcard_width += 1
         self._windows.card_bkgd.erase()
         self._windows.card_bkgd.bkgd(" ", curses.color_pair(1))
         self._windows.card_bkgd.refresh()
@@ -157,7 +159,10 @@ class CursesUi(Ui):
             offset_y=3,
             text=self.translations("guess_prompt"),
         )
-        return self._input_text(offset_y=3, length=max_answer_length + 1)
+        input_width = max_answer_length + 1
+        if input_width % 2 != 0:
+            input_width += 1
+        return self._input_text(offset_y=3, length=input_width)
 
     async def input_replay_missed_cards(self) -> bool:
         self._display_text(
