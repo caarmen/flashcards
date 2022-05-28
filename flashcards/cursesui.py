@@ -123,10 +123,10 @@ class CursesUi(Ui):
             self.text_windows = [
                 self.guess_result,
                 self.progress,
-                self.card_text,
                 self.input_label,
                 self.score,
-                self.card_bkgd
+                self.card_bkgd,
+                self.card_text,
             ]
 
     def __init__(self, translations):
