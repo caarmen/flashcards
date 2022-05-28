@@ -48,12 +48,6 @@ class CursesUi(Ui):
             curses.init_pair(2, curses.COLOR_BLACK, curses.COLOR_WHITE)
         self._windows = self._Windows(self._stdscr)
 
-    def _display_input_box(self, length: int):
-        self._windows.input_border.width = length
-        self._windows.input_border.redraw()
-        self._windows.input.width = length
-        self._windows.input.redraw(text="")
-
     def _horse(self, ch):
         if ch == 127:
             return curses.KEY_BACKSPACE
@@ -61,11 +55,6 @@ class CursesUi(Ui):
             for win in self._windows.all:
                 win.redraw()
         return ch
-
-    def _input_text(self, length: int) -> str:
-        self._display_input_box(length=length)
-        text_box = UnicodeTextbox(self._windows.input.win, length=length)
-        return text_box.edit(validate=self._horse)
 
     def display_flashcard(
             self, index: int, total: int, flashcard: str, max_key_length: int
@@ -89,7 +78,12 @@ class CursesUi(Ui):
         input_width = max_answer_length + 1
         if input_width % 2 != 0:
             input_width += 1
-        return self._input_text(length=input_width)
+        self._windows.input_border.width = input_width
+        self._windows.input_border.redraw()
+        self._windows.input.width = input_width
+        self._windows.input.redraw(text="")
+        text_box = UnicodeTextbox(self._windows.input.win, length=input_width)
+        return text_box.edit(validate=self._horse)
 
     async def input_replay_missed_cards(self) -> bool:
         self._windows.input_label.set_text(
@@ -116,9 +110,7 @@ class CursesUi(Ui):
         return do_replay
 
     def display_right_guess(self, key: str, correct_answer: str):
-        self._windows.guess_result.set_text(
-            text=self.translations("right_guess"),
-        )
+        self._windows.guess_result.set_text(text=self.translations("right_guess"))
 
     def display_wrong_guess(self, key: str, guess: str, correct_answer: str):
         self._windows.guess_result.set_text(
