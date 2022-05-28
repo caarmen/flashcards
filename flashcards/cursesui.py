@@ -69,7 +69,7 @@ class _TextWindow:
         self.win.clrtoeol()
         self.win.refresh()
 
-        self.win.resize(1, _text_width(text))
+        self.win.resize(1, max(_text_width(text), 1))
         self.win.mvwin(begin_y, begin_x)
         try:
             self.win.addstr(0, 0, text, self._color_pair | self._color_attrs)
@@ -114,10 +114,38 @@ class _InputBorder(_TextWindow):
         self.win.bkgd(" ", curses.color_pair(1))
         self.win.erase()
         self.win.refresh()
-        self.win.resize(3, self.width+ 3)
+        self.win.resize(3, self.width + 3)
         self.win.bkgd(" ", curses.color_pair(0))
         self.win.mvwin(begin_y - 1, begin_x - 1)
         rectangle(self.win, 0, 0, 2, self.width + 1)
+        self.win.refresh()
+
+
+class _Input(_TextWindow):
+    def __init__(self, parent_win):
+        super().__init__(parent_win=parent_win, offset_y=lambda lines, cols: int(lines / 2) + 2)
+        self.width = 0
+
+    def set_text(self, text: str, color_pair: int = None, color_attrs: int = curses.A_BOLD):
+        #super().set_text(text, color_pair, color_attrs)
+        self.win.clear()
+        screen_lines, screen_cols = self._parent_win.getmaxyx()
+        begin_x = int((screen_cols - self.width) / 2)
+        begin_y = self._offset_y(screen_lines, screen_cols)
+
+        self.win.move(0, 0)
+        self.win.bkgd(" ", self._color_pair)
+        self.win.clrtoeol()
+        self.win.refresh()
+
+        self.win.resize(1, self.width)
+        self.win.bkgd(" ", curses.color_pair(0))
+        self.win.mvwin(begin_y, begin_x)
+        self.win.move(0, 0)
+        try:
+            self.win.addstr(0, 0, text, self._color_pair | self._color_attrs)
+        except curses.error:
+            pass
         self.win.refresh()
 
 
@@ -136,7 +164,7 @@ class CursesUi(Ui):
             self.card_bkgd = _FlashcardBackground(parent_win=root_window)
             self.card_text = _TextWindow(parent_win=root_window, offset_y=lambda lines, cols: int(lines / 2) - 3)
             self.input_label = _TextWindow(parent_win=root_window, offset_y=lambda lines, cols: int(lines / 2) - 3)
-            self.input = _TextWindow(parent_win=root_window, offset_y=lambda lines, cols: int(lines / 2))
+            self.input = _Input(parent_win=root_window)
             self.input_border = _InputBorder(parent_win=root_window)
             self.score = _TextWindow(parent_win=root_window, offset_y=lambda lines, cols: int(lines / 2) + 3)
             self.text_windows = [
@@ -144,6 +172,7 @@ class CursesUi(Ui):
                 self.progress,
                 self.input_label,
                 self.input_border,
+                self.input,
                 self.score,
                 self.card_bkgd,
                 self.card_text,
@@ -175,23 +204,8 @@ class CursesUi(Ui):
     def _display_input_box(self, offset_y: int, length: int):
         self._windows.input_border.width = length
         self._windows.input_border.set_text("")
-        """
-        self._windows.input.clear()
-        begin_y, begin_x = self._get_text_coordinates(
-            offset_y=offset_y, text_length=length
-        )
-
-        self._windows.input_border.resize(3, length + 3)
-        self._windows.input_border.bkgd(" ", curses.color_pair(0))
-        self._windows.input_border.mvwin(begin_y - 1, begin_x - 1)
-        rectangle(self._windows.input_border, 0, 0, 2, length + 1)
-        self._windows.input_border.refresh()
-
-        self._windows.input.resize(1, length)
-        self._windows.input.bkgd(" ", curses.color_pair(0))
-        self._windows.input.mvwin(begin_y, begin_x)
-        self._windows.input.move(0, 0)
-        """
+        self._windows.input.width = length
+        self._windows.input.set_text("")
 
     def _horse(self, ch):
         if ch == 127:
