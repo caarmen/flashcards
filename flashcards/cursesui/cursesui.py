@@ -112,6 +112,9 @@ class CursesUi(Ui):
         self._windows.score.hide()
         self._windows.input_label.hide()
         self._windows.guess_result.hide()
+        if do_replay:
+            self._windows.input.show()
+            self._windows.input_border.show()
         return do_replay
 
     def display_right_guess(self, key: str, correct_answer: str):

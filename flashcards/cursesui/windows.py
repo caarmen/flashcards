@@ -21,6 +21,7 @@ class _BaseWindow:
     def __init__(self, parent_win, initial_lines: int = 1, initial_cols: int = 1):
         self._parent_win = parent_win
         self.win = curses.newwin(initial_lines, initial_cols)
+        self._visible = True
 
     @abc.abstractmethod
     def redraw(self):
@@ -28,10 +29,17 @@ class _BaseWindow:
         Redraw the widget
         """
 
+    def show(self):
+        """
+        Show the widget
+        """
+        self._visible = True
+
     def hide(self):
         """
         Hide the widget
         """
+        self._visible = False
         self.win.clear()
         self.win.bkgd(" ", curses.color_pair(1))
         self.win.refresh()
@@ -49,6 +57,8 @@ class BackgroundWindow(_BaseWindow):
         self.win.refresh()
 
     def redraw(self):
+        if not self._visible:
+            return
         screen_lines, screen_cols = self._parent_win.getmaxyx()
         self.win.resize(screen_lines, screen_cols)
         self.win.refresh()
@@ -72,6 +82,7 @@ class TextWindow(_BaseWindow):
         :param color_pair: the color pair to use
         :param color_attrs: color attributes to use
         """
+        self.show()
         screen_lines, screen_cols = self._parent_win.getmaxyx()
         begin_x = int((screen_cols - _text_width(text)) / 2)
         begin_y = self._offset_y(screen_lines)
@@ -92,6 +103,8 @@ class TextWindow(_BaseWindow):
         self.win.refresh()
 
     def redraw(self):
+        if not self._visible:
+            return
         text = self.win.instr(0, 0).decode("utf-8").strip()
         self.set_text(text)
 
@@ -106,6 +119,8 @@ class FlashcardBackground(_BaseWindow):
         self.width = 0
 
     def redraw(self):
+        if not self._visible:
+            return
         screen_lines, screen_cols = self._parent_win.getmaxyx()
         self.win.erase()
         self.win.bkgd(" ", curses.color_pair(1))
@@ -127,6 +142,8 @@ class InputBorder(_BaseWindow):
         self.width = 0
 
     def redraw(self):
+        if not self._visible:
+            return
         screen_lines, screen_cols = self._parent_win.getmaxyx()
         begin_x = int((screen_cols - self.width) / 2)
         begin_y = int(screen_lines / 2) + 2
@@ -151,6 +168,8 @@ class Input(_BaseWindow):
         self.width = 0
 
     def redraw(self, text: str = None):
+        if not self._visible:
+            return
         if text is None:
             text = self.win.instr(0, 0).decode("utf-8").strip()
         self.win.clear()
@@ -174,10 +193,9 @@ class Input(_BaseWindow):
     # Ignore invalid name for ch (we're reusing the existing name from the curses module)
     # pylint: disable=invalid-name
     def _input_validator(self, ch):
+        self._callback(ch)
         if ch == 127:
             return curses.KEY_BACKSPACE
-        if ch == curses.KEY_RESIZE:
-            self._callback(ch)
         return ch
 
     def wait_for_string(self) -> str:
@@ -192,5 +210,6 @@ class Input(_BaseWindow):
             # Ignore invalid name for ch (we're reusing the existing name from the curses module)
             # pylint: disable=invalid-name
             ch = self.win.getch()
+            self._callback(ch)
             if ch > 0 and ch != curses.KEY_RESIZE:
                 return chr(ch)
