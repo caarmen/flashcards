@@ -148,7 +148,10 @@ class CursesUi(Ui):
 
     def game_over(self):
         safe_curses_curs_set(0)
-        self._windows.input.wait_for_key()
+        try:
+            self._windows.input.wait_for_key()
+        except (KeyboardInterrupt, EOFError):
+            pass
         safe_curses_curs_set(1)
         curses.nocbreak()
         self._stdscr.keypad(False)
