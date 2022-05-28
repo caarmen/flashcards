@@ -56,7 +56,10 @@ class CursesUi(Ui):
         self._stdscr = curses.initscr()
         curses.noecho()
         curses.start_color()
-        curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_BLUE)
+        if curses.has_colors():
+            curses.use_default_colors()
+            curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_BLUE)
+            curses.init_pair(2, curses.COLOR_BLACK, curses.COLOR_WHITE)
         self._windows = self._Windows()
         self._windows.main.bkgd(" ", curses.color_pair(1))
         self._windows.main.refresh()
@@ -132,7 +135,7 @@ class CursesUi(Ui):
     ):
         self._display_text(
             win=self._windows.progress,
-            offset_y=int(self._lines / 2),
+            offset_y=int(self._lines / 2) - 1,
             text=self.translations("progress").format(index=index, total=total),
             color_attrs=curses.A_DIM,
         )
@@ -153,7 +156,7 @@ class CursesUi(Ui):
             win=self._windows.card_text,
             offset_y=-3,
             text=self.translations("display_flashcard").format(key=flashcard),
-            color_pair=curses.color_pair(1) | curses.A_REVERSE,
+            color_pair=curses.color_pair(2),
         )
 
     async def input_guess(self, flashcard: str, max_answer_length: int) -> str:
@@ -179,12 +182,18 @@ class CursesUi(Ui):
         self._windows.input.refresh()
         self._windows.input_border.refresh()
         self._windows.input_label.move(0, 0)
-        curses.curs_set(0)
+        try:
+            curses.curs_set(0)
+        except curses.error:
+            pass
         do_replay = (
             self._windows.input.getkey().casefold()
             == self.translations("answer_yes").casefold()
         )
-        curses.curs_set(1)
+        try:
+            curses.curs_set(1)
+        except curses.error:
+            pass
         self._windows.score.clear()
         self._windows.score.refresh()
         return do_replay
@@ -214,9 +223,15 @@ class CursesUi(Ui):
         )
 
     def game_over(self):
-        curses.curs_set(0)
+        try:
+            curses.curs_set(0)
+        except curses.error:
+            pass
         self._windows.input.getch()
-        curses.curs_set(1)
+        try:
+            curses.curs_set(1)
+        except curses.error:
+            pass
         curses.nocbreak()
         self._stdscr.keypad(False)
         curses.echo()
