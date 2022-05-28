@@ -299,9 +299,7 @@ class CursesUi(Ui):
             curses.curs_set(0)
         except curses.error:
             pass
-        """
-        self._windows.input.getch()
-        """
+        self._windows.input.win.getch()
         try:
             curses.curs_set(1)
         except curses.error:
