@@ -37,12 +37,13 @@ class CursesUi(Ui):
     Interact with the user in the flashcard game, in a console using curses
     """
 
-    # pylint: disable=too-few-public-methods
+    # pylint: disable=too-few-public-methods,too-many-instance-attributes
     class _Windows:
         def __init__(self):
             # pylint: disable=no-member
             self.main = curses.newwin(curses.LINES, curses.COLS)
             self.guess_result = curses.newwin(1, 1)
+            self.progress = curses.newwin(1, 1)
             self.card = curses.newwin(1, 1)
             self.input_label = curses.newwin(1, 1)
             self.input = curses.newwin(1, 1)
@@ -117,11 +118,14 @@ class CursesUi(Ui):
 
     def display_flashcard(self, index: int, total: int, flashcard: str):
         self._display_text(
+            win=self._windows.progress,
+            offset_y_pct=0.25,
+            text=self.translations("progress").format(index=index, total=total),
+        )
+        self._display_text(
             win=self._windows.card,
             offset_y_pct=0.33,
-            text=self.translations("display_flashcard").format(
-                index=index, total=total, key=flashcard
-            ),
+            text=self.translations("display_flashcard").format(key=flashcard),
         )
 
     async def input_guess(self, flashcard: str, max_answer_length: int) -> str:
