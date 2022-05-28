@@ -51,7 +51,7 @@ class CursesUi(Ui):
         self._windows.input_border.width = length
         self._windows.input_border.redraw()
         self._windows.input.width = length
-        self._windows.input.set_text("")
+        self._windows.input.redraw(text="")
 
     def _horse(self, ch):
         if ch == 127:
