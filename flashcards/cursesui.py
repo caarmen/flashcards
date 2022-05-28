@@ -4,8 +4,32 @@ Curses-based console user interface
 import curses
 import unicodedata
 from curses.textpad import Textbox, rectangle
+from curses.ascii import isprint, iscntrl
 
 from flashcards.ui import Ui
+
+
+class UnicodeTextbox(Textbox):
+    """
+    Add some support for unicode to Textbox
+    """
+
+    def __init__(self, win, length):
+        super().__init__(win)
+        self.length = length
+        self.win = win
+
+    def do_command(self, ch):
+        if ch < 0 or isprint(ch) or iscntrl(ch) or curses.KEY_MIN < ch < curses.KEY_MAX:
+            return super().do_command(ch)
+        try:
+            self.win.addch(ch)
+        except curses.error:
+            pass
+        return 1
+
+    def gather(self) -> str:
+        return self.win.instr(0, 0).decode("utf-8")
 
 
 class CursesUi(Ui):
@@ -13,6 +37,7 @@ class CursesUi(Ui):
     Interact with the user in the flashcard game, in a console using curses
     """
 
+    # pylint: disable=too-few-public-methods
     class _Windows:
         def __init__(self):
             # pylint: disable=no-member
@@ -87,8 +112,8 @@ class CursesUi(Ui):
 
     def _input_text(self, offset_y_pct: float, length: int) -> str:
         self._display_input_box(offset_y_pct=offset_y_pct, length=length)
-        text_box = Textbox(self._windows.input, insert_mode=True)
-        return text_box.edit(validate=lambda x: x if x != 127 else curses.KEY_BACKSPACE).strip()
+        text_box = UnicodeTextbox(self._windows.input, length=length)
+        return text_box.edit(validate=lambda x: x if x != 127 else curses.KEY_BACKSPACE)
 
     def display_flashcard(self, index: int, total: int, flashcard: str):
         self._display_text(
