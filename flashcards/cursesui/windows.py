@@ -28,6 +28,9 @@ class _BaseWindow:
         """
 
     def hide(self):
+        """
+        Hide the widget
+        """
         self.win.clear()
         self.win.bkgd(" ", curses.color_pair(1))
         self.win.refresh()
@@ -171,6 +174,8 @@ class Input(_BaseWindow):
         :return: the key input by the user
         """
         while True:
+            # Ignore invalid name for ch (we're reusing the existing name from the curses module)
+            # pylint: disable=invalid-name
             ch = self.win.getch()
             if ch > 0 and ch != curses.KEY_RESIZE:
                 return chr(ch)

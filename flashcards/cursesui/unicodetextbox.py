@@ -18,10 +18,12 @@ class UnicodeTextbox(Textbox):
         self.length = length
         self.win = win
 
+    # Ignore invalid name for ch (we're reusing the existing name from the curses module)
+    # pylint: disable=invalid-name
     def do_command(self, ch):
         if ch < 0 or isprint(ch) or iscntrl(ch) or curses.KEY_MIN < ch < curses.KEY_MAX:
             return super().do_command(ch)
-        safe_win_addch(ch)
+        safe_win_addch(self.win, ch)
         return 1
 
     def gather(self) -> str:

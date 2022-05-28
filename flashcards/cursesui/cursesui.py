@@ -65,6 +65,8 @@ class CursesUi(Ui):
             curses.init_pair(2, curses.COLOR_BLACK, curses.COLOR_WHITE)
         self._windows = self._Windows(self._stdscr)
 
+    # Ignore invalid name for ch (we're reusing the existing name from the curses module)
+    # pylint: disable=invalid-name
     def _input_validator(self, ch):
         if ch == 127:
             return curses.KEY_BACKSPACE

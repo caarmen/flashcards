@@ -14,6 +14,8 @@ def safe_curses_curs_set(visibility: int):
         pass
 
 
+# x and y are perfrectly fine
+# pylint: disable=invalid-name
 def safe_win_addstr(win, y: int, x: int, text: str, attr: int = None):
     """
     Safely call win.addstr
@@ -27,6 +29,8 @@ def safe_win_addstr(win, y: int, x: int, text: str, attr: int = None):
         pass
 
 
+# Ignore invalid name for ch (we're reusing the existing name from the curses module)
+# pylint: disable=invalid-name
 def safe_win_addch(win, ch):
     """
     Safely call win.addch
