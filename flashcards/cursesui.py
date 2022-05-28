@@ -81,6 +81,11 @@ class _TextWindow:
         text = self.win.instr(0, 0).decode("utf-8").strip()
         self.set_text(text, color_pair=self._color_pair, color_attrs=self._color_attrs)
 
+    def hide(self):
+        self.win.clear()
+        self.win.bkgd(" ", curses.color_pair(1))
+        self.win.refresh()
+
 
 class _FlashcardBackground(_TextWindow):
 
@@ -162,10 +167,10 @@ class CursesUi(Ui):
             self.progress = _TextWindow(parent_win=root_window, offset_y=lambda lines, cols: lines - 1)
             self.card_bkgd = _FlashcardBackground(parent_win=root_window)
             self.card_text = _TextWindow(parent_win=root_window, offset_y=lambda lines, cols: int(lines / 2) - 3)
-            self.input_label = _TextWindow(parent_win=root_window, offset_y=lambda lines, cols: int(lines / 2) - 3)
+            self.input_label = _TextWindow(parent_win=root_window, offset_y=lambda lines, cols: int(lines / 2) + 3)
             self.input = _Input(parent_win=root_window)
             self.input_border = _InputBorder(parent_win=root_window)
-            self.score = _TextWindow(parent_win=root_window, offset_y=lambda lines, cols: int(lines / 2) + 3)
+            self.score = _TextWindow(parent_win=root_window, offset_y=lambda lines, cols: int(lines / 2) + 6)
             self.text_windows = [
                 self.guess_result,
                 self.progress,
@@ -248,33 +253,25 @@ class CursesUi(Ui):
             text=self.translations("play_again"),
             color_attrs=curses.A_BLINK,
         )
-        """
-        self._windows.input.clear()
-        self._windows.input_border.clear()
-        self._windows.input.bkgd(" ", curses.color_pair(1))
-        self._windows.input_border.bkgd(" ", curses.color_pair(1))
-        self._windows.input.refresh()
-        self._windows.input_border.refresh()
-        self._windows.input_label.move(0, 0)
+        self._windows.input.hide()
+        self._windows.input_border.hide()
+        self._windows.input_label.win.move(0, 0)
+        self._windows.input_label.redraw()
         try:
             curses.curs_set(0)
         except curses.error:
             pass
         do_replay = (
-                self._windows.input.getkey().casefold()
+                self._windows.input.win.getkey().casefold()
                 == self.translations("answer_yes").casefold()
         )
         try:
             curses.curs_set(1)
         except curses.error:
             pass
-        self._windows.score.clear()
-        self._windows.score.refresh()
-        self._windows.input_label.clear()
-        self._windows.input_label.refresh()
+        self._windows.score.hide()
+        self._windows.input_label.hide()
         return do_replay
-        """
-        return False
 
     def display_right_guess(self, key: str, correct_answer: str):
         self._windows.guess_result.set_text(
