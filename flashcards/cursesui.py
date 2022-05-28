@@ -145,10 +145,12 @@ class CursesUi(Ui):
         self._windows.input.refresh()
         self._windows.input_border.refresh()
         self._windows.input_label.move(0, 0)
+        curses.curs_set(0)
         do_replay = (
             self._windows.input.getkey().casefold()
             == self.translations("answer_yes").casefold()
         )
+        curses.curs_set(1)
         self._windows.score.clear()
         self._windows.score.refresh()
         return do_replay
@@ -177,7 +179,9 @@ class CursesUi(Ui):
         )
 
     def game_over(self):
+        curses.curs_set(0)
         self._windows.input.getch()
+        curses.curs_set(1)
         curses.nocbreak()
         self._stdscr.keypad(False)
         curses.echo()
