@@ -52,43 +52,34 @@ class _TextWindow:
         self._parent_win = parent_win
         self.win = curses.newwin(1, 1)
         self._offset_y = offset_y
+        self._color_pair = curses.color_pair(1)
+        self._color_attrs = curses.A_BOLD
 
     def set_text(self, text: str, color_pair: int = None, color_attrs: int = curses.A_BOLD):
         screen_lines, screen_cols = self._parent_win.getmaxyx()
         begin_x = int((screen_cols - _text_width(text)) / 2)
         begin_y = self._offset_y(screen_lines, screen_cols)
 
-        if not color_pair:
-            color_pair = curses.color_pair(1)
+        if color_pair:
+            self._color_pair = color_pair
+        self._color_attrs = color_attrs
 
         self.win.move(0, 0)
-        self.win.bkgd(" ", color_pair)
+        self.win.bkgd(" ", self._color_pair)
         self.win.clrtoeol()
         self.win.refresh()
 
         self.win.resize(1, _text_width(text))
         self.win.mvwin(begin_y, begin_x)
         try:
-            self.win.addstr(0, 0, text, color_pair | color_attrs)
+            self.win.addstr(0, 0, text, self._color_pair | self._color_attrs)
         except curses.error:
             pass
         self.win.refresh()
 
     def redraw(self):
         text = self.win.instr(0, 0).decode("utf-8")
-        self.win.move(0, 0)
-        self.win.clrtoeol()
-        self.win.refresh()
-        screen_lines, screen_cols = self._parent_win.getmaxyx()
-        begin_y = self._offset_y(screen_lines, screen_cols)
-        begin_x = int((screen_cols - _text_width(text)) / 2)
-        self.win.mvwin(begin_y, begin_x)
-        self.win.move(0, 0)
-        try:
-            self.win.addstr(text)
-        except curses.error:
-            pass
-        self.win.refresh()
+        self.set_text(text, color_pair=self._color_pair, color_attrs=self._color_attrs)
 
 
 class CursesUi(Ui):
