@@ -1,25 +1,25 @@
 """
-Console user interface
+Simple text console user interface
 """
 from flashcards.ui import Ui
 
 
-class ConsoleUi(Ui):
+class TextUi(Ui):
     """
-    Interface to interact with the user in the flashcard game, in a console
+    Interface to interact with the user in the flashcard game, in a console,
+    using simple text input/output
     """
 
     def __init__(self, translations):
         self.translations = translations
 
-    def display_flashcard(self, index: int, total: int, flashcard: str):
-        print(
-            self.translations("display_flashcard").format(
-                index=index, total=total, key=flashcard
-            )
-        )
+    def display_flashcard(
+        self, index: int, total: int, flashcard: str, max_key_length: int
+    ):
+        print(self.translations("progress").format(index=index, total=total))
+        print(self.translations("display_flashcard").format(key=flashcard))
 
-    async def input_guess(self, flashcard: str) -> str:
+    async def input_guess(self, flashcard: str, max_answer_length: int) -> str:
         return input(self.translations("guess_prompt"))
 
     async def input_replay_missed_cards(self) -> bool:

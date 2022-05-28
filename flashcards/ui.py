@@ -10,13 +10,15 @@ class Ui(metaclass=abc.ABCMeta):
     """
 
     @abc.abstractmethod
-    def display_flashcard(self, index: int, total: int, flashcard: str):
+    def display_flashcard(
+        self, index: int, total: int, flashcard: str, max_key_length: int
+    ):
         """
         Display the flashcard
         """
 
     @abc.abstractmethod
-    async def input_guess(self, flashcard: str) -> str:
+    async def input_guess(self, flashcard: str, max_answer_length: int) -> str:
         """
         Input the user's guess for the given flaskcard
         """
@@ -46,4 +48,9 @@ class Ui(metaclass=abc.ABCMeta):
     def display_score(self, correct_count: int, guessed_count: int):
         """
         Display the score of a game
+        """
+
+    def game_over(self):
+        """
+        Handle any cleanup at the end of the game
         """

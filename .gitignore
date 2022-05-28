@@ -3,3 +3,6 @@ __pycache__
 .coverage
 .DS_Store
 reports/
+dist/
+build/
+flashcards.spec
