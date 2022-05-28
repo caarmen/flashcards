@@ -48,7 +48,7 @@ class CursesUi(Ui):
             curses.init_pair(2, curses.COLOR_BLACK, curses.COLOR_WHITE)
         self._windows = self._Windows(self._stdscr)
 
-    def _horse(self, ch):
+    def _input_validator(self, ch):
         if ch == 127:
             return curses.KEY_BACKSPACE
         if ch == curses.KEY_RESIZE:
@@ -83,7 +83,7 @@ class CursesUi(Ui):
         self._windows.input.width = input_width
         self._windows.input.redraw(text="")
         text_box = UnicodeTextbox(self._windows.input.win, length=input_width)
-        return text_box.edit(validate=self._horse)
+        return text_box.edit(validate=self._input_validator)
 
     async def input_replay_missed_cards(self) -> bool:
         self._windows.input_label.set_text(
