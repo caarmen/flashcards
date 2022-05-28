@@ -2,6 +2,8 @@
 Curses-based console user interface
 """
 import curses
+from typing import Callable
+
 import unicodedata
 from curses.textpad import Textbox, rectangle
 from curses.ascii import isprint, iscntrl
@@ -32,6 +34,63 @@ class UnicodeTextbox(Textbox):
         return self.win.instr(0, 0).decode("utf-8")
 
 
+def _get_text_coordinates(screen_lines: int, screen_cols: int, offset_y: int, text_length: int) -> tuple[int, int]:
+    begin_y = int(screen_lines / 2) + offset_y
+    begin_x = int((screen_cols - text_length) / 2)
+    return begin_y, begin_x
+
+
+def _text_width(text: str) -> int:
+    wide_char_count = sum(
+        [1 for ch in text if unicodedata.east_asian_width(ch) == "W"]
+    )
+    return wide_char_count + len(text)
+
+
+class _TextWindow:
+    def __init__(self, parent_win, offset_y: Callable[[int, int], int]):
+        self._parent_win = parent_win
+        self.win = curses.newwin(1, 1)
+        self._offset_y = offset_y
+
+    def set_text(self, text: str, color_pair: int = None, color_attrs: int = curses.A_BOLD):
+        screen_lines, screen_cols = self._parent_win.getmaxyx()
+        begin_x = int((screen_cols - _text_width(text)) / 2)
+        begin_y = self._offset_y(screen_lines, screen_cols)
+
+        if not color_pair:
+            color_pair = curses.color_pair(1)
+
+        self.win.move(0, 0)
+        self.win.bkgd(" ", color_pair)
+        self.win.clrtoeol()
+        self.win.refresh()
+
+        self.win.resize(1, _text_width(text))
+        self.win.mvwin(begin_y, begin_x)
+        try:
+            self.win.addstr(0, 0, text, color_pair | color_attrs)
+        except curses.error:
+            pass
+        self.win.refresh()
+
+    def redraw(self):
+        text = self.win.instr(0, 0).decode("utf-8")
+        self.win.move(0, 0)
+        self.win.clrtoeol()
+        self.win.refresh()
+        screen_lines, screen_cols = self._parent_win.getmaxyx()
+        begin_y = self._offset_y(screen_lines, screen_cols)
+        begin_x = int((screen_cols - _text_width(text)) / 2)
+        self.win.mvwin(begin_y, begin_x)
+        self.win.move(0, 0)
+        try:
+            self.win.addstr(text)
+        except curses.error:
+            pass
+        self.win.refresh()
+
+
 class CursesUi(Ui):
     """
     Interact with the user in the flashcard game, in a console using curses
@@ -39,17 +98,17 @@ class CursesUi(Ui):
 
     # pylint: disable=too-few-public-methods,too-many-instance-attributes
     class _Windows:
-        def __init__(self):
+        def __init__(self, root_window):
             # pylint: disable=no-member
             self.main = curses.newwin(curses.LINES, curses.COLS)
-            self.guess_result = curses.newwin(1, 1)
-            self.progress = curses.newwin(1, 1)
-            self.card_bkgd = curses.newwin(1, 1)
-            self.card_text = curses.newwin(1, 1)
-            self.input_label = curses.newwin(1, 1)
-            self.input = curses.newwin(1, 1)
-            self.input_border = curses.newwin(1, 1)
-            self.score = curses.newwin(1, 1)
+            self.guess_result = _TextWindow(parent_win=root_window, offset_y=lambda lines, cols: int(lines / 2) - 8)
+            self.progress = _TextWindow(parent_win=root_window, offset_y=lambda lines, cols: lines - 1)
+            self.card_bkgd = _TextWindow(parent_win=root_window, offset_y=lambda lines, cols: int(lines / 2) - 5)
+            self.card_text = _TextWindow(parent_win=root_window, offset_y=lambda lines, cols: int(lines / 2) - 3)
+            self.input_label = _TextWindow(parent_win=root_window, offset_y=lambda lines, cols: int(lines / 2) - 3)
+            self.input = _TextWindow(parent_win=root_window, offset_y=lambda lines, cols: int(lines / 2))
+            self.input_border = _TextWindow(parent_win=root_window, offset_y=lambda lines, cols: int(lines / 2))
+            self.score = _TextWindow(parent_win=root_window, offset_y=lambda lines, cols: int(lines / 2) + 3)
 
     def __init__(self, translations):
         self.translations = translations
@@ -59,7 +118,7 @@ class CursesUi(Ui):
         if curses.has_colors():
             curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_BLUE)
             curses.init_pair(2, curses.COLOR_BLACK, curses.COLOR_WHITE)
-        self._windows = self._Windows()
+        self._windows = self._Windows(self._stdscr)
         self._windows.main.bkgd(" ", curses.color_pair(1))
         self._windows.main.refresh()
 
@@ -67,49 +126,15 @@ class CursesUi(Ui):
     def _lines(self) -> int:
         # pylint doesn't realize that we'll have the LINES and COLS members
         # pylint: disable=no-member
-        return curses.LINES
+        return self._stdscr.getmaxyx()[0]
 
     @property
     def _cols(self) -> int:
         # pylint: disable=no-member
-        return curses.COLS
-
-    def _get_text_coordinates(self, offset_y: int, text_length: int) -> tuple[int, int]:
-        begin_y = int(self._lines / 2) + offset_y
-        begin_x = int((self._cols - text_length) / 2)
-        return begin_y, begin_x
-
-    @classmethod
-    def _text_width(cls, text: str) -> int:
-        wide_char_count = sum(
-            [1 for ch in text if unicodedata.east_asian_width(ch) == "W"]
-        )
-        return wide_char_count + len(text)
-
-    def _display_text(
-        self, win, offset_y: int, text: str, color_pair=None, color_attrs=curses.A_BOLD
-    ):
-        begin_y, begin_x = self._get_text_coordinates(
-            offset_y=offset_y, text_length=self._text_width(text)
-        )
-
-        if not color_pair:
-            color_pair = curses.color_pair(1)
-
-        win.move(0, 0)
-        win.bkgd(" ", color_pair)
-        win.clrtoeol()
-        win.refresh()
-
-        win.resize(1, self._text_width(text))
-        win.mvwin(begin_y, begin_x)
-        try:
-            win.addstr(0, 0, text, color_pair | color_attrs)
-        except curses.error:
-            pass
-        win.refresh()
+        return self._stdscr.getmaxyx()[1]
 
     def _display_input_box(self, offset_y: int, length: int):
+        """
         self._windows.input.clear()
         begin_y, begin_x = self._get_text_coordinates(
             offset_y=offset_y, text_length=length
@@ -125,21 +150,28 @@ class CursesUi(Ui):
         self._windows.input.bkgd(" ", curses.color_pair(0))
         self._windows.input.mvwin(begin_y, begin_x)
         self._windows.input.move(0, 0)
+        """
+
+    def _horse(self, ch):
+        if ch == 127:
+            return curses.KEY_BACKSPACE
+        if ch == curses.KEY_RESIZE:
+            self._windows.progress.redraw()
+        return ch
 
     def _input_text(self, offset_y: int, length: int) -> str:
         self._display_input_box(offset_y=offset_y, length=length)
-        text_box = UnicodeTextbox(self._windows.input, length=length)
-        return text_box.edit(validate=lambda x: x if x != 127 else curses.KEY_BACKSPACE)
+        text_box = UnicodeTextbox(self._windows.input.win, length=length)
+        return text_box.edit(validate=self._horse)
 
     def display_flashcard(
-        self, index: int, total: int, flashcard: str, max_key_length: int
+            self, index: int, total: int, flashcard: str, max_key_length: int
     ):
-        self._display_text(
-            win=self._windows.progress,
-            offset_y=int(self._lines / 2) - 1,
+        self._windows.progress.set_text(
             text=self.translations("progress").format(index=index, total=total),
             color_attrs=curses.A_DIM,
         )
+        """
         flashcard_width = max_key_length + 8
         if flashcard_width % 2 != 0:
             flashcard_width += 1
@@ -153,17 +185,14 @@ class CursesUi(Ui):
         )
         self._windows.card_bkgd.box()
         self._windows.card_bkgd.refresh()
-        self._display_text(
-            win=self._windows.card_text,
-            offset_y=-3,
+        self._windows.card_text.set_text(
             text=self.translations("display_flashcard").format(key=flashcard),
             color_pair=curses.color_pair(2),
         )
+        """
 
     async def input_guess(self, flashcard: str, max_answer_length: int) -> str:
-        self._display_text(
-            win=self._windows.input_label,
-            offset_y=3,
+        self._windows.input_label.set_text(
             text=self.translations("guess_prompt"),
         )
         input_width = max_answer_length + 1
@@ -172,12 +201,11 @@ class CursesUi(Ui):
         return self._input_text(offset_y=3, length=input_width)
 
     async def input_replay_missed_cards(self) -> bool:
-        self._display_text(
-            win=self._windows.input_label,
-            offset_y=1,
+        self._windows.input_label.set_text(
             text=self.translations("play_again"),
             color_attrs=curses.A_BLINK,
         )
+        """
         self._windows.input.clear()
         self._windows.input_border.clear()
         self._windows.input.bkgd(" ", curses.color_pair(1))
@@ -190,8 +218,8 @@ class CursesUi(Ui):
         except curses.error:
             pass
         do_replay = (
-            self._windows.input.getkey().casefold()
-            == self.translations("answer_yes").casefold()
+                self._windows.input.getkey().casefold()
+                == self.translations("answer_yes").casefold()
         )
         try:
             curses.curs_set(1)
@@ -202,25 +230,21 @@ class CursesUi(Ui):
         self._windows.input_label.clear()
         self._windows.input_label.refresh()
         return do_replay
+        """
+        return False
 
     def display_right_guess(self, key: str, correct_answer: str):
-        self._display_text(
-            win=self._windows.guess_result,
-            offset_y=-8,
+        self._windows.guess_result.set_text(
             text=self.translations("right_guess"),
         )
 
     def display_wrong_guess(self, key: str, guess: str, correct_answer: str):
-        self._display_text(
-            win=self._windows.guess_result,
-            offset_y=-8,
+        self._windows.guess_result.set_text(
             text=self.translations("wrong_guess").format(correct_answer=correct_answer),
         )
 
     def display_score(self, correct_count: int, guessed_count: int):
-        self._display_text(
-            win=self._windows.score,
-            offset_y=7,
+        self._windows.score.set_text(
             text=self.translations("game_score").format(
                 correct_count=correct_count, guessed_count=guessed_count
             ),
@@ -232,7 +256,9 @@ class CursesUi(Ui):
             curses.curs_set(0)
         except curses.error:
             pass
+        """
         self._windows.input.getch()
+        """
         try:
             curses.curs_set(1)
         except curses.error:
