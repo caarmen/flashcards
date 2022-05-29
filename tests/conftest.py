@@ -1,11 +1,13 @@
 """
 Provider tests
 """
+import gettext
+from os import path
 
 import pytest
 
 from flashcards.provider import FlashcardProvider
-from flashcards.ui import Ui
+from tests.fakes import FakeCursesUi, FakeUi, FakeFlashcardProvider
 
 
 @pytest.fixture(name="ui_factory")
@@ -14,41 +16,22 @@ def fixture_ui_factory():
     :return: Factory to create a Ui with hardcoded guesses
     """
 
-    class TestUi(Ui):
-        """
-        Test flashcard ui which immediately returns test guesses
-        """
-
-        def __init__(self, guesses: dict[str:str]):
-            self.correct_count = 0
-            self.guessed_count = 0
-            self.guesses = guesses
-
-        def display_flashcard(
-            self, index: int, total: int, flashcard: str, max_key_length: int
-        ):
-            pass
-
-        def display_right_guess(self, key: str, correct_answer: str):
-            pass
-
-        def display_wrong_guess(self, key: str, guess: str, correct_answer: str):
-            pass
-
-        async def input_guess(self, flashcard: str, max_answer_length: int) -> str:
-            return self.guesses.get(flashcard)
-
-        async def input_replay_missed_cards(self) -> bool:
-            return False
-
-        def display_score(self, correct_count: int, guessed_count: int):
-            self.correct_count = correct_count
-            self.guessed_count = guessed_count
-
-    def _make_ui(guesses: dict[str:str]) -> TestUi:
-        return TestUi(guesses=guesses)
+    def _make_ui(guesses: dict[str:str]) -> FakeUi:
+        return FakeUi(guesses=guesses)
 
     return _make_ui
+
+
+@pytest.fixture(name="curses_ui_factory")
+def fixture_curses_ui_factory(translations):
+    """
+    :return: Factory to create a curses Ui with hardcoded guesses
+    """
+
+    def _make_curses_ui(guesses: dict[str:str]) -> FakeCursesUi:
+        return FakeCursesUi(translations=translations, guesses=guesses)
+
+    return _make_curses_ui
 
 
 @pytest.fixture(name="provider_factory")
@@ -57,19 +40,21 @@ def fixture_provider_factory():
     :return: Factory to create a FlashcardProvider with hardcoded flashcard data
     """
 
-    # pylint: disable=too-few-public-methods
-    class TestFlashcardProvider(FlashcardProvider):
-        """
-        Test flashcard provider with hardcoded flashcards
-        """
-
-        def __init__(self, cards: dict[str:str]):
-            self.cards = cards
-
-        def flashcards(self) -> dict[str, str]:
-            return self.cards
-
     def _make_provider(flashcards: dict[str, str]) -> FlashcardProvider:
-        return TestFlashcardProvider(flashcards)
+        return FakeFlashcardProvider(flashcards)
 
     return _make_provider
+
+
+@pytest.fixture(name="translations")
+def fixture_translations():
+    """
+    Loads translations and provides the translation function
+    :return: translations gettext function
+    """
+    locales_dir = path.abspath(
+        path.join(path.dirname(path.dirname(__file__)), "locales")
+    )
+    translations = gettext.translation("base", localedir=locales_dir, languages=["en"])
+    translations.install()
+    return translations.gettext

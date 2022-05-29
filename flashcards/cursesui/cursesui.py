@@ -5,7 +5,7 @@ import curses
 from dataclasses import dataclass
 from typing import Callable
 
-from flashcards.cursesui.safe_curses import safe_curses_curs_set
+from flashcards.cursesui.safe_curses import safe_curses_curs_set, safe_curses_endwin, safe_curses_nocbreak
 from flashcards.cursesui.widgets import (
     Background,
     Label,
@@ -199,6 +199,6 @@ class CursesUi(Ui):
         except (KeyboardInterrupt, EOFError):
             pass
         safe_curses_curs_set(1)
-        curses.nocbreak()
+        safe_curses_nocbreak()
         curses.echo()
-        curses.endwin()
+        safe_curses_endwin()
