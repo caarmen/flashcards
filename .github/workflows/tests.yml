@@ -13,7 +13,10 @@ jobs:
         run: |
           python -m pip install -r requirements/test.txt --upgrade pip
       - name: Run tests
-        run: bash scripts/run_tests.sh
+        run: |
+          export TERM=linux
+          export TERMINFO=/etc/terminfo
+          bash scripts/run_tests.sh
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v3
         if: always() # always run even if the previous step fails

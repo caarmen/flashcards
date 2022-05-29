@@ -20,11 +20,24 @@ def _text_width(text: str) -> int:
     return wide_char_count + len(text)
 
 
-class _BaseWindow:
-    def __init__(self, parent_win, initial_lines: int = 1, initial_cols: int = 1):
+class _BaseWidget:
+    def __init__(
+        self, parent_win, color_pair: int, initial_lines: int = 1, initial_cols: int = 1
+    ):
         self._parent_win = parent_win
         self.win = curses.newwin(initial_lines, initial_cols)
         self._visible = True
+        self.color_pair = color_pair
+
+    def clear(self):
+        """
+        Clear the area drawn by this widget
+        """
+        self.win.move(0, 0)
+        self.win.bkgd(" ", self.color_pair)
+        self.win.erase()
+        self.win.clrtoeol()
+        self.win.refresh()
 
     @abc.abstractmethod
     def redraw(self):
@@ -44,18 +57,23 @@ class _BaseWindow:
         """
         self._visible = False
         self.win.clear()
-        self.win.bkgd(" ", curses.color_pair(1))
+        self.win.bkgd(" ", self.color_pair)
         self.win.refresh()
 
 
-class Background(_BaseWindow):
+class Background(_BaseWidget):
     """
     Displays the background of the screen
     """
 
-    def __init__(self, parent_win, color_pair):
+    def __init__(self, parent_win, color_pair: int):
         screen_lines, screen_cols = parent_win.getmaxyx()
-        super().__init__(parent_win, screen_lines, screen_cols)
+        super().__init__(
+            parent_win=parent_win,
+            color_pair=color_pair,
+            initial_lines=screen_lines,
+            initial_cols=screen_cols,
+        )
         self.win.bkgd(" ", color_pair)
         self.win.refresh()
 
@@ -67,46 +85,41 @@ class Background(_BaseWindow):
         self.win.refresh()
 
 
-class Label(_BaseWindow):
+class Label(_BaseWidget):
     """
     Displays a text on the screen
     """
 
-    def __init__(self, parent_win, offset_y: Callable[[int], int]):
-        super().__init__(parent_win)
+    def __init__(
+        self,
+        parent_win,
+        color_pair: int,
+        offset_y: Callable[[int], int],
+        color_attrs: int = curses.A_BOLD,
+    ):
+        super().__init__(parent_win, color_pair)
         self._offset_y = offset_y
-        self._color_pair = curses.color_pair(1)
-        self._color_attrs = curses.A_BOLD
+        self._color_attrs = color_attrs
 
-    def set_text(self, text: str, color_pair: int = None, color_attrs: int = None):
+    def set_text(self, text: str):
         """
         Display a text
         :param text: the text to display
-        :param color_pair: the color pair to use
-        :param color_attrs: color attributes to use
         """
         self.show()
         screen_lines, screen_cols = self._parent_win.getmaxyx()
         begin_x = (screen_cols - _text_width(text)) // 2
         begin_y = self._offset_y(screen_lines)
 
-        if color_pair:
-            self._color_pair = color_pair
-        if color_attrs:
-            self._color_attrs = color_attrs
-
-        self.win.move(0, 0)
-        self.win.bkgd(" ", self._color_pair)
-        self.win.clrtoeol()
-        self.win.refresh()
+        self.clear()
 
         if not self._visible:
             return
 
         self.win.resize(1, max(_text_width(text), 1))
         self.win.mvwin(begin_y, begin_x)
-        self.win.bkgd(" ", self._color_pair)
-        safe_win_addstr(self.win, 0, 0, text, self._color_pair | self._color_attrs)
+        self.win.bkgd(" ", self.color_pair)
+        safe_win_addstr(self.win, 0, 0, text, self.color_pair | self._color_attrs)
         self.win.refresh()
 
     def redraw(self):
@@ -114,37 +127,38 @@ class Label(_BaseWindow):
         self.set_text(text)
 
 
-class Card(_BaseWindow):
+class Card(_BaseWidget):
     """
     Displays the flashcard background
     """
 
-    def __init__(self, parent_win):
-        super().__init__(parent_win=parent_win)
+    def __init__(self, parent_win, background_color_pair: int, card_color_pair: int):
+        super().__init__(parent_win=parent_win, color_pair=background_color_pair)
+        self._card_color_pair = card_color_pair
         self.width = 0
 
     def redraw(self):
         if not self._visible:
             return
         screen_lines, screen_cols = self._parent_win.getmaxyx()
-        self.win.erase()
-        self.win.bkgd(" ", curses.color_pair(1))
-        self.win.refresh()
+        self.clear()
         self.win.resize(5, self.width)
-        self.win.bkgd(" ", curses.color_pair(1) | curses.A_REVERSE)
+        self.win.bkgd(" ", self._card_color_pair)
         self.win.mvwin(screen_lines // 2 - 5, (screen_cols - self.width) // 2)
         self.win.box()
         self.win.refresh()
 
 
-class StatusBar(_BaseWindow):
+class StatusBar(_BaseWidget):
     """
     Displays a bar at the bottom of the screen
     """
 
-    def __init__(self, parent_win, color_pair):
-        super().__init__(parent_win=parent_win)
-        self._color_pair = color_pair
+    def __init__(
+        self, parent_win, background_color_pair: int, status_bar_color_pair: int
+    ):
+        super().__init__(parent_win=parent_win, color_pair=background_color_pair)
+        self._status_bar_color_pair = status_bar_color_pair
         self._text = ""
 
     def set_text(self, text: str):
@@ -161,24 +175,23 @@ class StatusBar(_BaseWindow):
         if not self._visible:
             return
         screen_lines, screen_cols = self._parent_win.getmaxyx()
-        self.win.erase()
-        self.win.bkgd(" ", curses.color_pair(1))
-        self.win.refresh()
+        self.clear()
         self.win.resize(1, screen_cols)
-        self.win.bkgd(" ", self._color_pair)
+        self.win.bkgd(" ", self._status_bar_color_pair)
         self.win.mvwin(screen_lines - 1, 0)
         text_col_start = screen_cols - _text_width(self._text) - 1
         safe_win_addstr(self.win, 0, text_col_start, self._text)
         self.win.refresh()
 
 
-class InputBorder(_BaseWindow):
+class InputBorder(_BaseWidget):
     """
     Displays a border around the input field
     """
 
-    def __init__(self, parent_win):
-        super().__init__(parent_win=parent_win)
+    def __init__(self, parent_win, color_pair: int, input_color_pair: int):
+        super().__init__(parent_win=parent_win, color_pair=color_pair)
+        self._input_color_pair = input_color_pair
         self.width = 0
 
     def redraw(self):
@@ -187,23 +200,28 @@ class InputBorder(_BaseWindow):
         screen_lines, screen_cols = self._parent_win.getmaxyx()
         begin_x = (screen_cols - self.width) // 2
         begin_y = screen_lines // 2 + 2
-        self.win.bkgd(" ", curses.color_pair(1))
-        self.win.erase()
-        self.win.refresh()
+        self.clear()
         self.win.resize(3, self.width + 3)
-        self.win.bkgd(" ", curses.color_pair(0))
+        self.win.bkgd(" ", self._input_color_pair)
         self.win.mvwin(begin_y - 1, begin_x - 1)
         rectangle(self.win, 0, 0, 2, self.width + 1)
         self.win.refresh()
 
 
-class Input(_BaseWindow):
+class Input(_BaseWidget):
     """
     Displays the input field
     """
 
-    def __init__(self, parent_win, callback: Callable[[int], None]):
-        super().__init__(parent_win=parent_win)
+    def __init__(
+        self,
+        parent_win,
+        color_pair: int,
+        input_color_pair: int,
+        callback: Callable[[int], None],
+    ):
+        super().__init__(parent_win=parent_win, color_pair=color_pair)
+        self._input_color_pair = input_color_pair
         self._callback = callback
         self.width = 0
 
@@ -217,13 +235,10 @@ class Input(_BaseWindow):
         begin_x = (screen_cols - self.width) // 2
         begin_y = screen_lines // 2 + 2
 
-        self.win.move(0, 0)
-        self.win.bkgd(" ", curses.color_pair(1))
-        self.win.clrtoeol()
-        self.win.refresh()
+        self.clear()
 
         self.win.resize(1, self.width)
-        self.win.bkgd(" ", curses.color_pair(0))
+        self.win.bkgd(" ", self._input_color_pair)
         self.win.mvwin(begin_y, begin_x)
         self.win.move(0, 0)
         safe_win_addstr(self.win, 0, 0, text)

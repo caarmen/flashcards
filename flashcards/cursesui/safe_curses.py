@@ -14,6 +14,26 @@ def safe_curses_curs_set(visibility: int):
         pass
 
 
+def safe_curses_nocbreak():
+    """
+    Safely call curses.nocbreak()
+    """
+    try:
+        curses.nocbreak()
+    except curses.error:
+        pass
+
+
+def safe_curses_endwin():
+    """
+    Safely call curses.endwin
+    """
+    try:
+        curses.endwin()
+    except curses.error:
+        pass
+
+
 # x and y are perfrectly fine
 # pylint: disable=invalid-name
 def safe_win_addstr(win, y: int, x: int, text: str, attr: int = None):
