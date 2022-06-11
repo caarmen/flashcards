@@ -18,7 +18,7 @@ class Engine:
         self.guessed_count = 0
         self.provider = provider
 
-    async def _play_deck(
+    def _play_deck(
         self, deck: dict[str, str], max_key_length: int, max_answer_length: int
     ):
         keys = list(deck.keys())
@@ -33,7 +33,7 @@ class Engine:
                 flashcard=key,
                 max_key_length=max_key_length,
             )
-            guess = (await self.game_ui.input_guess(key, max_answer_length)).strip()
+            guess = self.game_ui.input_guess(key, max_answer_length).strip()
             correct_answer = deck[key]
             if guess.casefold() == correct_answer.casefold():
                 self.correct_count += 1
@@ -44,20 +44,20 @@ class Engine:
             self.guessed_count += 1
         self.game_ui.display_score(self.correct_count, self.guessed_count)
         if wrong_guesses:
-            if await self.game_ui.input_replay_missed_cards():
-                await self._play_deck(wrong_guesses, max_key_length, max_answer_length)
+            if self.game_ui.input_replay_missed_cards():
+                self._play_deck(wrong_guesses, max_key_length, max_answer_length)
 
-    async def play(self):
+    def play(self):
         """
         Play a game
         """
         flashcards = self.provider.flashcards()
         max_key_length = max([len(x) for x in flashcards.keys()])
         max_answer_length = max([len(x) for x in flashcards.values()])
-        await self._play_deck(flashcards, max_key_length, max_answer_length)
+        self._play_deck(flashcards, max_key_length, max_answer_length)
         self.game_ui.game_over()
 
-    async def game_interrupted(self):
+    def game_interrupted(self):
         """
         Handle the interruption of the game by the user
         """

@@ -24,7 +24,7 @@ translations.install()
 _ = translations.gettext
 
 
-async def main():
+def main():
     """
     Application entry point
     """
@@ -51,6 +51,6 @@ async def main():
     provider = CsvFlashcardProvider(options.input)
     engine = Engine(game_ui, provider)
     try:
-        await engine.play()
+        engine.play()
     except (KeyboardInterrupt, EOFError):
-        await engine.game_interrupted()
+        engine.game_interrupted()

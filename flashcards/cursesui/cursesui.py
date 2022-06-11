@@ -149,7 +149,7 @@ class CursesUi(Ui):
             text=self.translations("display_flashcard").format(key=flashcard)
         )
 
-    async def input_guess(self, flashcard: str, max_answer_length: int) -> str:
+    def input_guess(self, flashcard: str, max_answer_length: int) -> str:
         input_width = max_answer_length + 1
         if input_width % 2 != 0:
             input_width += 1
@@ -159,7 +159,7 @@ class CursesUi(Ui):
         self._widgets.input.redraw(text="")
         return self._widgets.input.wait_for_string()
 
-    async def input_replay_missed_cards(self) -> bool:
+    def input_replay_missed_cards(self) -> bool:
         self._widgets.input_label.set_text(text=self.translations("play_again"))
         self._widgets.input.hide()
         self._widgets.input_border.hide()
