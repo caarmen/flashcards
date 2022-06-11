@@ -114,13 +114,16 @@ class Widgets:
         ]
 
 
+Translator = Callable[[str], str]
+
+
 class CursesUi(Ui):
     """
     Interact with the user in the flashcard game, in a console using curses
     """
 
-    def __init__(self, translations):
-        self.translations = translations
+    def __init__(self, translations: Translator):
+        self._ = translations
         self._widgets = Widgets(self._on_key_input)
         curses.noecho()
 
@@ -135,7 +138,7 @@ class CursesUi(Ui):
             self, index: int, total: int, flashcard: str, max_key_length: int
     ):
         self._widgets.statusbar.set_text(
-            text=self.translations("progress").format(index=index, total=total),
+            text=self._("progress").format(index=index, total=total),
         )
 
         # make sure the flashcard width and input box with are both multiples of
@@ -147,7 +150,7 @@ class CursesUi(Ui):
         self._widgets.card_bkgd.width = flashcard_width
         self._widgets.card_bkgd.redraw()
         self._widgets.card_text.set_text(
-            text=self.translations("display_flashcard").format(key=flashcard)
+            text=self._("display_flashcard").format(key=flashcard)
         )
 
     def input_guess(self, flashcard: str, max_answer_length: int) -> str:
@@ -161,14 +164,14 @@ class CursesUi(Ui):
         return self._widgets.input.wait_for_string()
 
     def input_replay_missed_cards(self) -> bool:
-        self._widgets.input_label.set_text(text=self.translations("play_again"))
+        self._widgets.input_label.set_text(text=self._("play_again"))
         self._widgets.input.hide()
         self._widgets.input_border.hide()
         self._widgets.input_label.win.move(0, 0)
         self._widgets.input_label.redraw()
         safe_curses_curs_set(0)
         key = self._widgets.input.wait_for_key()
-        do_replay = key.casefold() == self.translations("answer_yes").casefold()
+        do_replay = key.casefold() == self._("answer_yes").casefold()
         safe_curses_curs_set(1)
         self._widgets.score.hide()
         self._widgets.input_label.hide()
@@ -179,16 +182,16 @@ class CursesUi(Ui):
         return do_replay
 
     def display_right_guess(self, key: str, correct_answer: str):
-        self._widgets.guess_result.set_text(text=self.translations("right_guess"))
+        self._widgets.guess_result.set_text(text=self._("right_guess"))
 
     def display_wrong_guess(self, key: str, guess: str, correct_answer: str):
         self._widgets.guess_result.set_text(
-            text=self.translations("wrong_guess").format(correct_answer=correct_answer),
+            text=self._("wrong_guess").format(correct_answer=correct_answer),
         )
 
     def display_score(self, correct_count: int, guessed_count: int):
         self._widgets.score.set_text(
-            text=self.translations("game_score").format(
+            text=self._("game_score").format(
                 correct_count=correct_count, guessed_count=guessed_count
             )
         )

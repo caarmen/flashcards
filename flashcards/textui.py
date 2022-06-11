@@ -1,7 +1,11 @@
 """
 Simple text console user interface
 """
+from typing import Callable
+
 from flashcards.ui import Ui
+
+Translator = Callable[[str], str]
 
 
 class TextUi(Ui):
@@ -10,33 +14,30 @@ class TextUi(Ui):
     using simple text input/output
     """
 
-    def __init__(self, translations):
-        self.translations = translations
+    def __init__(self, translator: Translator):
+        self._ = translator
 
     def display_flashcard(
         self, index: int, total: int, flashcard: str, max_key_length: int
     ):
-        print(self.translations("progress").format(index=index, total=total))
-        print(self.translations("display_flashcard").format(key=flashcard))
+        print(self._("progress").format(index=index, total=total))
+        print(self._("display_flashcard").format(key=flashcard))
 
     def input_guess(self, flashcard: str, max_answer_length: int) -> str:
-        return input(self.translations("guess_prompt"))
+        return input(self._("guess_prompt"))
 
     def input_replay_missed_cards(self) -> bool:
-        return (
-            input(self.translations("play_again")).casefold()
-            == self.translations("answer_yes").casefold()
-        )
+        return input(self._("play_again")).casefold() == self._("answer_yes").casefold()
 
     def display_right_guess(self, key: str, correct_answer: str):
-        print(self.translations("right_guess"))
+        print(self._("right_guess"))
 
     def display_wrong_guess(self, key: str, guess: str, correct_answer: str):
-        print(self.translations("wrong_guess").format(correct_answer=correct_answer))
+        print(self._("wrong_guess").format(correct_answer=correct_answer))
 
     def display_score(self, correct_count: int, guessed_count: int):
         print(
-            self.translations("game_score").format(
+            self._("game_score").format(
                 correct_count=correct_count, guessed_count=guessed_count
             )
         )

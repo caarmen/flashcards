@@ -3,7 +3,7 @@ Provide fake implementations of classes for tests
 """
 import curses
 
-from flashcards.cursesui.cursesui import CursesUi
+from flashcards.cursesui.cursesui import CursesUi, Translator
 from flashcards.provider import FlashcardProvider
 from flashcards.ui import Ui
 
@@ -58,7 +58,7 @@ class FakeCursesUi(CursesUi):
     Simlate a curses ui. The user input is done with calls to ungetch
     """
 
-    def __init__(self, translations, guesses: dict[str:str]):
+    def __init__(self, translations: Translator, guesses: dict[str:str]):
         super().__init__(translations)
         self.correct_count = 0
         self.guessed_count = 0
