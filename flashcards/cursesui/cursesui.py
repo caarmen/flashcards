@@ -5,7 +5,11 @@ import curses
 from dataclasses import dataclass
 from typing import Callable
 
-from flashcards.cursesui.safe_curses import safe_curses_curs_set, safe_curses_endwin, safe_curses_nocbreak
+from flashcards.cursesui.safe_curses import (
+    safe_curses_curs_set,
+    safe_curses_endwin,
+    safe_curses_nocbreak,
+)
 from flashcards.cursesui.widgets import (
     Background,
     Label,
@@ -135,7 +139,7 @@ class CursesUi(Ui):
                 win.redraw()
 
     def display_flashcard(
-            self, index: int, total: int, flashcard: str, max_key_length: int
+        self, index: int, total: int, flashcard: str, max_key_length: int
     ):
         self._widgets.statusbar.set_text(
             text=self._("progress").format(index=index, total=total),
