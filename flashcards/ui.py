@@ -18,13 +18,13 @@ class Ui(metaclass=abc.ABCMeta):
         """
 
     @abc.abstractmethod
-    async def input_guess(self, flashcard: str, max_answer_length: int) -> str:
+    def input_guess(self, flashcard: str, max_answer_length: int) -> str:
         """
         Input the user's guess for the given flaskcard
         """
 
     @abc.abstractmethod
-    async def input_replay_missed_cards(self) -> bool:
+    def input_replay_missed_cards(self) -> bool:
         """
         Ask the user if they want to replay the cards they missed
         """

@@ -19,10 +19,10 @@ class TextUi(Ui):
         print(self.translations("progress").format(index=index, total=total))
         print(self.translations("display_flashcard").format(key=flashcard))
 
-    async def input_guess(self, flashcard: str, max_answer_length: int) -> str:
+    def input_guess(self, flashcard: str, max_answer_length: int) -> str:
         return input(self.translations("guess_prompt"))
 
-    async def input_replay_missed_cards(self) -> bool:
+    def input_replay_missed_cards(self) -> bool:
         return (
             input(self.translations("play_again")).casefold()
             == self.translations("answer_yes").casefold()
