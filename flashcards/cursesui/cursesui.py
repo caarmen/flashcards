@@ -48,11 +48,12 @@ class Palette:
 
 # pylint: disable=too-few-public-methods,too-many-instance-attributes
 class Widgets:
+    KeyInputCallback = Callable[[int], None]
     """
     Collection of the different widgets used in the app
     """
 
-    def __init__(self, key_input_callback: Callable[[int], None]):
+    def __init__(self, key_input_callback: KeyInputCallback):
         # pylint: disable=no-member
         root_window = curses.initscr()
         palette = Palette()
