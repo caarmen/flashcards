@@ -27,14 +27,13 @@ class FakeUi(Ui):
     """
 
     def __init__(self, guesses: dict[str:str]):
+        super().__init__()
         self.correct_count = 0
         self.guessed_count = 0
         self.guesses = guesses
 
-    def display_flashcard(
-        self, index: int, total: int, flashcard: str, max_key_length: int
-    ):
-        pass
+    def display_flashcard(self, index: int, total: int, flashcard: str):
+        self.input_callback.on_guess(self.guesses.get(flashcard))
 
     def display_right_guess(self, key: str, correct_answer: str):
         pass
@@ -42,11 +41,8 @@ class FakeUi(Ui):
     def display_wrong_guess(self, key: str, guess: str, correct_answer: str):
         pass
 
-    def input_guess(self, flashcard: str, max_answer_length: int) -> str:
-        return self.guesses.get(flashcard)
-
-    def input_replay_missed_cards(self) -> bool:
-        return False
+    def prompt_replay_missed_cards(self):
+        pass
 
     def display_score(self, correct_count: int, guessed_count: int):
         self.correct_count = correct_count
@@ -69,15 +65,15 @@ class FakeCursesUi(CursesUi):
         for char in text[::-1]:
             curses.ungetch(ord(char))
 
-    def input_guess(self, flashcard: str, max_answer_length: int) -> str:
+    def display_flashcard(self, index: int, total: int, flashcard: str):
         guess = self.guesses.get(flashcard)
         self._fake_user_input(f"{guess}\n")
-        return super().input_guess(flashcard, max_answer_length)
+        super().display_flashcard(index, total, flashcard)
 
-    def input_replay_missed_cards(self) -> bool:
+    def prompt_replay_missed_cards(self):
         self._fake_user_input("n")  # No, to not replay the missed cards
         self._fake_user_input("x")  # x, any key to exit the game
-        return super().input_replay_missed_cards()
+        return super().prompt_replay_missed_cards()
 
     def display_score(self, correct_count: int, guessed_count: int):
         self.correct_count = correct_count

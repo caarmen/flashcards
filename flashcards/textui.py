@@ -15,19 +15,20 @@ class TextUi(Ui):
     """
 
     def __init__(self, translator: Translator):
+        super().__init__()
         self._ = translator
 
-    def display_flashcard(
-        self, index: int, total: int, flashcard: str, max_key_length: int
-    ):
+    def display_flashcard(self, index: int, total: int, flashcard: str):
         print(self._("progress").format(index=index, total=total))
         print(self._("display_flashcard").format(key=flashcard))
+        guess = input(self._("guess_prompt"))
+        self.input_callback.on_guess(guess)
 
-    def input_guess(self, flashcard: str, max_answer_length: int) -> str:
-        return input(self._("guess_prompt"))
-
-    def input_replay_missed_cards(self) -> bool:
-        return input(self._("play_again")).casefold() == self._("answer_yes").casefold()
+    def prompt_replay_missed_cards(self):
+        continue_answer = (
+            input(self._("play_again")).casefold() == self._("answer_yes").casefold()
+        )
+        self.input_callback.on_replay_answer(continue_answer)
 
     def display_right_guess(self, key: str, correct_answer: str):
         print(self._("right_guess"))
