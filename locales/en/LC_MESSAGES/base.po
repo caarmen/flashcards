@@ -27,6 +27,9 @@ msgstr "Replay missed cards (Y)es/(N)o? "
 msgid "answer_yes"
 msgstr "Y"
 
+msgid "answer_no"
+msgstr "N"
+
 msgid "game_score"
 msgstr "Correctly guessed {correct_count} out of {guessed_count}."
 

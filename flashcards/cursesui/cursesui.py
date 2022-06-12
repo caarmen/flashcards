@@ -52,10 +52,11 @@ class Palette:
 
 # pylint: disable=too-few-public-methods,too-many-instance-attributes
 class Widgets:
-    KeyInputCallback = Callable[[int], None]
     """
     Collection of the different widgets used in the app
     """
+
+    KeyInputCallback = Callable[[int], None]
 
     def __init__(self, key_input_callback: KeyInputCallback):
         # pylint: disable=no-member
@@ -127,9 +128,16 @@ class CursesUi(Ui):
     """
 
     def __init__(self, translations: Translator):
+        super().__init__()
         self._ = translations
         self._widgets = Widgets(self._on_key_input)
         curses.noecho()
+        self._max_key_length = 0
+        self._max_answer_length = 0
+
+    def setup(self, max_key_length: int, max_answer_length: int):
+        self._max_key_length = max_key_length
+        self._max_answer_length = max_answer_length
 
     # Ignore invalid name for ch (we're reusing the existing name from the curses module)
     # pylint: disable=invalid-name
@@ -138,16 +146,14 @@ class CursesUi(Ui):
             for win in self._widgets.all:
                 win.redraw()
 
-    def display_flashcard(
-        self, index: int, total: int, flashcard: str, max_key_length: int
-    ):
+    def display_flashcard(self, index: int, total: int, flashcard: str):
         self._widgets.statusbar.set_text(
             text=self._("progress").format(index=index, total=total),
         )
 
         # make sure the flashcard width and input box with are both multiples of
         # 2, so they'll be alignedhorizontally.
-        flashcard_width = max_key_length + 8
+        flashcard_width = self._max_key_length + 8
         if flashcard_width % 2 != 0:
             flashcard_width += 1
 
@@ -156,9 +162,11 @@ class CursesUi(Ui):
         self._widgets.card_text.set_text(
             text=self._("display_flashcard").format(key=flashcard)
         )
+        guess = self._input_guess()
+        self.input_callback.on_guess(guess)
 
-    def input_guess(self, flashcard: str, max_answer_length: int) -> str:
-        input_width = max_answer_length + 1
+    def _input_guess(self) -> str:
+        input_width = self._max_answer_length + 1
         if input_width % 2 != 0:
             input_width += 1
         self._widgets.input_border.width = input_width
@@ -167,7 +175,7 @@ class CursesUi(Ui):
         self._widgets.input.redraw(text="")
         return self._widgets.input.wait_for_string()
 
-    def input_replay_missed_cards(self) -> bool:
+    def prompt_replay_missed_cards(self):
         self._widgets.input_label.set_text(text=self._("play_again"))
         self._widgets.input.hide()
         self._widgets.input_border.hide()
@@ -183,7 +191,7 @@ class CursesUi(Ui):
         if do_replay:
             self._widgets.input.show()
             self._widgets.input_border.show()
-        return do_replay
+        self.input_callback.on_replay_answer(do_replay)
 
     def display_right_guess(self, key: str, correct_answer: str):
         self._widgets.guess_result.set_text(text=self._("right_guess"))

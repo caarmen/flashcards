@@ -27,5 +27,8 @@ msgstr "Retester les cartes ratées (O)ui/(N)on ? "
 msgid "answer_yes"
 msgstr "O"
 
+msgid "answer_no"
+msgstr "N"
+
 msgid "game_score"
 msgstr "Vous avez deviné {correct_count} sur {guessed_count}."
