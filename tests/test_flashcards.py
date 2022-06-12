@@ -1,6 +1,7 @@
 """
 Flashcard tests
 """
+import asyncio
 
 from flashcards.csvprovider import CsvFlashcardProvider
 from flashcards.engine import Engine
@@ -42,6 +43,21 @@ def test_curses_engine_score(provider_factory, curses_ui_factory):
 
     provider = provider_factory({"hello": "hola", "goodbye": "adios", "cold": "frio"})
     game_ui = curses_ui_factory(
+        guesses={"hello": "hola", "goodbye": "au revoir", "cold": "frio"}
+    )
+    engine = Engine(game_ui=game_ui, provider=provider)
+    engine.play()
+    assert game_ui.guessed_count == 3
+    assert game_ui.correct_count == 2
+
+
+def test_textual_engine_score(provider_factory, textual_ui_factory):
+    """
+    Test that the engine calculates the expected score with a textual ui
+    """
+
+    provider = provider_factory({"hello": "hola", "goodbye": "adios", "cold": "frio"})
+    game_ui = textual_ui_factory(
         guesses={"hello": "hola", "goodbye": "au revoir", "cold": "frio"}
     )
     engine = Engine(game_ui=game_ui, provider=provider)

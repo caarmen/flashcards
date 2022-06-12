@@ -7,7 +7,7 @@ from os import path
 import pytest
 
 from flashcards.provider import FlashcardProvider
-from tests.fakes import FakeCursesUi, FakeUi, FakeFlashcardProvider
+from tests.fakes import FakeCursesUi, FakeUi, FakeFlashcardProvider, FakeTextualUi
 
 
 @pytest.fixture(name="ui_factory")
@@ -20,6 +20,18 @@ def fixture_ui_factory():
         return FakeUi(guesses=guesses)
 
     return _make_ui
+
+
+@pytest.fixture(name="textual_ui_factory")
+def fixture_textual_ui_factory(translations):
+    """
+    :return: Factory to create a textual Ui with hardcoded guesses
+    """
+
+    def _make_textual_ui(guesses: dict[str:str]) -> FakeTextualUi:
+        return FakeTextualUi(translations=translations, guesses=guesses)
+
+    return _make_textual_ui
 
 
 @pytest.fixture(name="curses_ui_factory")

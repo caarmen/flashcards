@@ -4,13 +4,14 @@ Application entry point
 import argparse
 import gettext
 import os
-from os import path
 import sys
+from os import path
 
-from flashcards.cursesui.cursesui import CursesUi
-from flashcards.textui import TextUi
-from flashcards.engine import Engine
 from flashcards.csvprovider import CsvFlashcardProvider
+from flashcards.cursesui.cursesui import CursesUi
+from flashcards.engine import Engine
+from flashcards.textualui import TextualUi
+from flashcards.textui import TextUi
 
 BUNDLE_DIR = getattr(
     sys, "_MEIPASS", path.abspath(path.dirname(path.dirname(__file__)))
@@ -38,16 +39,19 @@ def main():
     parser.add_argument(
         "--ui",
         nargs="?",
-        default="curses",
-        choices=["text", "curses"],
+        default="textual",
+        choices=["text", "curses", "textual"],
         help="Ui type. Default is %(default)s",
     )
     options = parser.parse_args()
 
-    if options.ui == "curses":
-        game_ui = CursesUi(_)
-    else:
-        game_ui = TextUi(_)
+    match options.ui:
+        case "curses":
+            game_ui = CursesUi(_)
+        case "textual":
+            game_ui = TextualUi(_)
+        case _:
+            game_ui = TextUi(_)
     provider = CsvFlashcardProvider(options.input)
     engine = Engine(game_ui, provider)
     try:
