@@ -1,0 +1,359 @@
+être,essere
+avoir,avere
+faire,fare
+dire,dire
+prendre,prendere
+aller,andare
+savoir,sapere
+voir,vedere
+venir,venire
+penser,pensare
+regarder,guardare
+vouloir,volere
+donner,dare
+utiliser,utilizzare
+trouver,trovare
+demander,chiedere
+travailler,lavorare
+paraître,parere
+sentir,sentire
+essayer,provare
+partir,partire
+appeler,chiamare
+je suis,sono
+tu es,sei
+il est,è
+nous sommes,siamo
+vous êtes,siete
+ils sont,sono
+j'ai,ho
+tu as,hai
+il a,ha
+nous avons,abbiamo
+vous avez,avete
+ils ont,hanno
+je fais,faccio
+tu fais,fai
+il fait,fa
+nous faisons,facciamo
+vous faites,fate
+ils font,fanno
+je dis,dico
+tu dis,dici
+il dit,dice
+nous disons,diciamo
+vous dites,dite
+ils disent,dicono
+je prends,prendo
+tu prends,prendi
+il prend,prende
+nous prenons,prendiamo
+vous prenez,prendete
+ils prennent,prendono
+je vais,vado
+tu vas,vai
+il va,va
+nous allons,andiamo
+vous allez,andate
+ils vont,vanno
+je sais,so
+tu sais,sai
+il sait,sa
+nous savons,sappiamo
+vous savez,sapete
+ils savent,sanno
+je vois,vedo
+tu vois,vedi
+il voit,vede
+nous voyons,vediamo
+vous voyez,vedete
+ils voient,vedono
+je viens,vengo
+tu viens,vieni
+il vient,viene
+nous venons,veniamo
+vous venez,venite
+ils viennent,vengono
+je pense,penso
+tu penses,pensi
+il pense,pensa
+nous pensons,pensiamo
+vous pensez,pensate
+ils pensent,pensano
+je regarde,guardo
+tu regardes,guardi
+il regarde,guarda
+nous regardons,guardiamo
+vous regardez,guardate
+ils regardent,guardano
+je veux,voglio
+tu veux,vuoi
+il veut,vuole
+nous voulons,vogliamo
+vous voulez,volete
+ils veulent,vogliono
+je donne,dò
+tu donnes,dai
+il donne,dà
+nous donnons,diamo
+vous donnez,date
+ils donnent,danno
+j'utilise,uso
+tu utilises,usi
+il utilise,usa
+nous utilisons,usiamo
+vous utilisez,usate
+ils utilisent,usano
+je trouve,trovo
+tu trouves,trovi
+il trouve,trova
+nous trouvons,troviamo
+vous trouvez,trovate
+ils trouvent,trovano
+je demande,chiedo
+tu demandes,chiedi
+il demande,chiede
+nous demandons,chiediamo
+vous demandez,chiedete
+ils demandent,chiedono
+je travaille,lavoro
+tu travailles,lavori
+il travaille,lavora
+nous travaillons,lavoriamo
+vous travaillez,lavorate
+ils travaillent,lavorano
+je parais,paro
+tu parais,pari
+il parait,pare
+nous paraissons,pariamo
+vous paraissez,parete
+ils paraissent,parono
+je sens,sento
+tu sens,senti
+il sent,sente
+nous sentons,sentiamo
+vous sentez,sentite
+ils sentent,sentono
+j'essaie,provo
+tu essaies,provi
+il essaie,prova
+nous essayons,proviamo
+vous essayez,provate
+ils essaient,provano
+je pars,parto
+tu pars,parti
+il part,parte
+nous partons,partiamo
+vous partez,partite
+ils partent,partono
+j'appelle,chiamo
+tu appelles,chiami
+il appelle,chiama
+nous appelons,chiamiamo
+vous appelez,chiamate
+ils appellent,chiamano
+je suis allé(e),sono andato/a
+j'ai eu,ho avuto
+j'ai fait,ho fatto
+j'ai dit,ho detto
+j'ai pris,ho preso
+je suis allé(e),sono andato/a
+j'ai su,ho saputo
+j'ai vu,ho visto
+je suis venu(e),sono venuto/a
+j'ai pensé,ho pensato
+j'ai regardé,ho guardato
+j'ai voulu,ho voluto
+j'ai donné,ho dato
+j'ai utilisé,ho usato
+j'ai trouvé,ho trovato
+j'ai demandé,ho chiesto
+j'ai travaillé,ho lavorato
+j'ai paru,ho parso
+j'ai senti,ho sentito
+j'ai essayé,ho provato
+je suis parti(e),sono partito/a
+j'ai appelé,ho chiamato
+j'allais,andavo
+tu allais,andavi
+il allait,andava
+nous allions,andavamo
+vous alliez,andavate
+ils allaient,andavano
+j'avais,avevo
+tu avais,avevi
+il avait,aveva
+nous avions,avevamo
+vous aviez,avevate
+ils avaient,avevano
+je faisais,facevo
+tu faisais,facevi
+il faisait,faceva
+nous faisions,facevamo
+vous faisiez,facevate
+ils faisaient,facevano
+je disais,dicevo
+tu disais,dicevi
+il disait,diceva
+nous disions,dicevamo
+vous disiez,dicevate
+ils disaient,dicevano
+je prenais,prendevo
+tu prenais,prendevi
+il prenait,prendeva
+nous prenions,prendevamo
+vous preniez,prendevate
+ils prenaient,prendevano
+j'allais,vado
+tu allais,vai
+il allait,va
+nous allions,andiamo
+vous alliez,andate
+ils allaient,vanno
+je savais,sapevo
+tu savais,sapevi
+il savait,sapeva
+nous savions,sapevamo
+vous saviez,sapevate
+ils savaient,sapevano
+je voyais,vedevo
+tu voyais,vedevi
+il voyait,vedeva
+nous voyions,vedevamo
+vous voyiez,vedevate
+ils voyaient,vedevano
+je venais,venivo
+tu venais,venivi
+il venait,veniva
+nous venions,venivamo
+vous veniez,venivate
+ils venaient,venivano
+je pensais,pensavo
+tu pensais,pensavi
+il pensait,pensava
+nous pensions,pensavamo
+vous pensiez,pensavate
+ils pensaient,pensavano
+je regardais,guardavo
+tu regardais,guardavi
+il regardait,guardava
+nous regardions,guardavamo
+vous regardiez,guardavate
+ils regardaient,guardavano
+je voulais,volevo
+tu voulais,volevi
+il voulait,voleva
+nous voulions,volevamo
+vous vouliez,volevate
+ils voulaient,volevano
+je donnais,davo
+tu donnais,davi
+il donnait,dava
+nous donnions,davamo
+vous donniez,davate
+ils donnaient,davano
+j'utilisais,usavo
+tu utilisais,usavi
+il utilisait,usava
+nous utilisions,usavamo
+vous utilisiez,usavate
+ils utilisaient,usavano
+je trouvais,trovavo
+tu trouvais,trovavi
+il trouvait,trovava
+nous trouvions,trovavamo
+vous trouviez,trovavate
+ils trouvaient,trovavano
+je demandais,chiedevo
+tu demandais,chiedevi
+il demandait,chiedeva
+nous demandions,chiedevamo
+vous demandiez,chiedevate
+ils demandaient,chiedevano
+je travaillais,lavoravo
+tu travaillais,lavoravi
+il travaillait,lavorava
+nous travaillions,lavoravamo
+vous travailliez,lavoravate
+ils travaillaient,lavoravano
+je paraissais,parevo
+tu paraissais,parevi
+il paraissait,pareva
+nous paraissions,parevamo
+vous paraissiez,parevate
+ils paraissaient,parevano
+je sentais,sentivo
+tu sentais,sentivi
+il sentait,sentiva
+nous sentions,sentivamo
+vous sentiez,sentivate
+ils sentaient,sentivano
+j'essayais,provavo
+tu essayais,provavi
+il essayait,provava
+nous essayions,provavamo
+vous essayiez,provavate
+ils essayaient,provavano
+je partais,partivo
+tu partais,partivi
+il partait,partiva
+nous partions,partivamo
+vous partiez,partivate
+ils partaient,partivano
+j'appelais,chiamavo
+tu appelais,chiamavi
+il appelait,chiamava
+nous appelions,chiamavamo
+vous appeliez,chiamavate
+ils appelaient,chiamavano
+sois!,sii!
+soyons!,siamo!
+soyez!,siate!
+fais!,fai!
+faisons!,facciamo!
+faites!,fate!
+dis!,di!
+disons!,diciamo!
+dites!,dite!
+prends!,prendi!
+prenons!,prendiamo!
+prenez!,prendete!
+va!,vai!
+allons!,andiamo!
+allez!,andate!
+sache!,sappi!
+sachons!,sappiamo!
+sachez!,sappiate!
+vois!,vedi!
+voyons!,vediamo!
+voyez!,vedete!
+viens!,vieni!
+venons!,veniamo!
+venez!,venite!
+regarde!,guarda!
+regardons!,guardiamo!
+regardez!,guardate!
+donne!,dai!
+donnons!,diamo!
+donnez!,date!
+utilise!,usa!
+utilisons!,usiamo!
+utilisez!,usate!
+trouve!,trova!
+trouvons!,troviamo!
+trouvez!,trovate!
+demande!,chiedi!
+demandons!,chiediamo!
+demandez!,chiedete!
+travaille!,lavora!
+travaillons!,lavoriamo!
+travaillez!,lavorate!
+essaie!,prova!
+essayons!,proviamo!
+essayez!,provate!
+pars!,parti!
+partons!,partiamo!
+partez!,partite!
+appelle!,chiama!
+appelons!,chiamiamo!
+appelez!,chiamate!
