@@ -5,6 +5,8 @@ dire,dire
 prendre,prendere
 aller,andare
 savoir,sapere
+croire,credere
+finir,finire
 voir,vedere
 venir,venire
 penser,pensare
@@ -61,6 +63,18 @@ il sait,sa
 nous savons,sappiamo
 vous savez,sapete
 ils savent,sanno
+je crois,credo
+tu crois,credi
+il croit,crede
+nous croyons,crediamo
+vous croyez,credete
+ils croient,credono
+je finis,finisco
+tu finis,finisci
+il finit,finisce
+nous finissions,finiamo
+vous finissez,finite
+ils finissent,finiscono
 je vois,vedo
 tu vois,vedi
 il voit,vede
@@ -152,6 +166,8 @@ j'ai dit,ho detto
 j'ai pris,ho preso
 je suis allé(e),sono andato/a
 j'ai su,ho saputo
+j'ai cru,creduto
+j'ai fini,ho finito
 j'ai vu,ho visto
 je suis venu(e),sono venuto/a
 j'ai pensé,ho pensato
@@ -208,6 +224,18 @@ il savait,sapeva
 nous savions,sapevamo
 vous saviez,sapevate
 ils savaient,sapevano
+je croyais,credevo
+tu croyais,credevi
+il croyait,credeva
+nous croyions,credevamo
+vous croyiez,credevate
+ils croyaient,credevano
+je finissais,finivo
+tu finissais,finivi
+il finissait,finiva
+nous finissions,finivamo
+vous finissiez,finivate
+ils finissaient,finivano
 je voyais,vedevo
 tu voyais,vedevi
 il voyait,vedeva
@@ -310,6 +338,12 @@ allez!,andate!
 sache!,sappi!
 sachons!,sappiamo!
 sachez!,sappiate!
+crois!,credi!
+croyons!,crediamo!
+croyez!,credete!
+finis!,finisci!
+finissons!,finiamo!
+finissez!,finite!
 vois!,vedi!
 voyons!,vediamo!
 voyez!,vedete!
